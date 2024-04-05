@@ -44,7 +44,7 @@ After installation, you can start the mining process by running:
 ```bash
 ./ore.sh
 ```
-### Variable setting config
+### Change default variable config manually
 
 To change your setting please set up in ore.conf located in `.ore`
 ```bash
