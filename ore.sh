@@ -8,15 +8,25 @@ EOF
 echo -e "Version 0.1.0 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
-# Check if the Ore CLI is installed and update it to the latest version
-echo "Checking and updating Ore CLI to the latest version..."
-cargo install ore-cli
+# The crate name to check and update
+CRATE_NAME="ore-cli"
 
-echo "Ore CLI has been updated to the latest version."
+# Get the latest version of the crate from crates.io
+LATEST_VERSION=$(cargo search $CRATE_NAME --limit 1 | grep "^$CRATE_NAME =" | cut -d'"' -f2)
 
-# Print the current installed version of Ore CLI
-echo "Installed version of Ore CLI is:"
-ore --version
+# Get the currently installed version
+INSTALLED_VERSION=$($CRATE_NAME --version | awk '{print $2}')
+
+echo "Installed version: $INSTALLED_VERSION"
+echo "Latest version: $LATEST_VERSION"
+
+# Compare the versions (this is a simplistic comparison)
+if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
+  echo "Updating $CRATE_NAME to the latest version..."
+  cargo install $CRATE_NAME --force
+else
+  echo "$CRATE_NAME is up to date."
+fi
 
 # Initial variable settings
 ORE_DIR="$HOME/.ore"
