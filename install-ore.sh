@@ -6,7 +6,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
 EOF
-echo -e "Version 0.1.0 - Ore Cli installer"
+echo -e "Version 0.1.1 - Ore Cli installer"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 # Exit script if any command fails
 set -e
