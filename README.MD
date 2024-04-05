@@ -1,10 +1,3 @@
-echo -e "\033[0;32m"
-cat << "EOF"
-█▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
-EOF
-echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
-
 This script automates the setup and running of the Ore CLI for $ORE mining operations on Soylana Manlet, ensuring you're always running the latest version and simplifying the mining setup process.
 
 ## Quick Start
