@@ -49,5 +49,3 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
 else
     echo "Setup aborted. Run ore.sh manually to complete setup."
 fi
-
-source ~/.profile
