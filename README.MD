@@ -6,6 +6,7 @@ To get started with the Ore Miner Auto Script, clone this repository to your loc
 
 ```bash
 git clone https://github.com/nodecattel/ore.git
+cd ore
 ```
 
 ### Prerequisites
