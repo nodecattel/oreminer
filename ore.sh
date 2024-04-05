@@ -1,4 +1,5 @@
 #!/bin/bash
+source ~/.profile
 
 # Version Information and Credits
 echo -e "\033[0;32m"
