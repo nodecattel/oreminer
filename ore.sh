@@ -46,7 +46,7 @@ if [ ! -f "$KEYPAIR_PATH" ]; then
     echo -e "\033[0;32mGenerating a new Solana keypair...\033[0m"
     echo -e "\033[1;33mIMPORTANT: The next output will include your seed phrase. Please make sure to write it down and store it safely!\033[0m"
     read -p "Press enter to continue and see your seed phrase..."
-    solana-keygen new --outfile "$KEYPAIR_PATH"
+    solana-keygen new
     echo -e "\033[1;33mPlease make sure you have saved your seed phrase securely.\033[0m"
     read -p "Backup done? Press enter to continue..."
 fi
