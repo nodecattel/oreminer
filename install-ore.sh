@@ -1,4 +1,5 @@
 #!/bin/bash
+source ~/.profile
 
 echo -e "\033[0;32m"
 cat << "EOF"
@@ -48,3 +49,5 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
 else
     echo "Setup aborted. Run ore.sh manually to complete setup."
 fi
+
+source ~/.profile
