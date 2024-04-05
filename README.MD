@@ -57,3 +57,8 @@ To change your setting please set up in ore.conf located in `.ore`
 cd $HOME/.ore
 nano ore.conf
 ```
+### Export Private key to external wallet
+```bash
+cat $HOME/.config/solana/id.json
+```
+Then copy the output to your external wallet
