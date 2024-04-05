@@ -26,7 +26,6 @@ chmod +x install-ore.sh ore.sh
 Navigate to the cloned repository directory and run the `install-ore.sh` script to set up the necessary components:
 
 ```bash
-cd ore
 ./install-ore.sh
 ```
 
@@ -43,6 +42,5 @@ Follow the on-screen instructions to complete the installation. The script will:
 After installation, you can start the mining process by running:
 
 ```bash
-chmod +x ore.sh
 ./ore.sh
 ```
