@@ -1,10 +1,10 @@
-## Disclaimer
+## Disclaimer 👷‍♂️🔧
 
 This code is experimental and provided "as is", without warranty of any kind. Use it at your own risk. It's under development, and its features may change. Always back up your data before use. Contributions and feedback are welcome.
 
 This script automates the setup and running of the Ore CLI for $ORE mining operations on Soylana Manlet, ensuring you're always running the latest version and simplifying the mining setup process.
 
-## Quick Start
+## Quick Start ⛏️
 
 To get started with the Ore Miner Auto Script, clone this repository to your local machine using the following command:
 
@@ -13,7 +13,7 @@ git clone https://github.com/nodecattel/ore.git
 cd ore
 ```
 
-### Prerequisites
+### Prerequisites ✅
 
 Before running the script, ensure you have the following installed:
 
@@ -25,7 +25,7 @@ Before running the script, ensure you have the following installed:
 ```bash
 chmod +x install-ore.sh ore.sh ore2.sh
 ```
-### Installation
+### Installation ✅
 
 Navigate to the cloned repository directory and run the `install-ore.sh` script to set up the necessary components:
 
@@ -41,7 +41,7 @@ Follow the on-screen instructions to complete the installation. The script will:
 - Set executable permissions for `ore.sh`
 - Optionally run `ore.sh` for further setup
 
-### Running Ore Miner
+### Running Ore Miner ⛏️⛏️⛏️
 
 After installation, you can start the mining process by running:
 
