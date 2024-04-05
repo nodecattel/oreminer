@@ -19,7 +19,7 @@ Before running the script, ensure you have the following installed:
 ### Give permission for script become executable
 
 ```bash
-chmod +x install-ore.sh ore.sh
+chmod +x install-ore.sh ore.sh ore2.sh
 ```
 ### Installation
 
@@ -44,6 +44,12 @@ After installation, you can start the mining process by running:
 ```bash
 ./ore.sh
 ```
+*** test version 0.1.3 run with ***
+
+```bash
+./ore2.sh
+```
+
 ### Change default variable config manually
 
 To change your setting please set up in ore.conf located in `.ore`
