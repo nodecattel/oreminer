@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Version Information and Credits
 echo -e "\033[0;32m"
 cat << "EOF"
@@ -7,7 +6,17 @@ cat << "EOF"
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
 EOF
 echo -e "Version 0.1.0 - Ore Miner"
-echo -e "Made by NodeCattel\033[0m"
+echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
+
+# Check if the Ore CLI is installed and update it to the latest version
+echo "Checking and updating Ore CLI to the latest version..."
+cargo install ore-cli
+
+echo "Ore CLI has been updated to the latest version."
+
+# Print the current installed version of Ore CLI
+echo "Installed version of Ore CLI is:"
+ore --version
 
 # Initial variable settings
 ORE_DIR="$HOME/.ore"
