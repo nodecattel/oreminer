@@ -13,8 +13,8 @@ echo -e "Made by NodeCattel\033[0m" # End green color
 ORE_DIR="$HOME/.ore"
 CONFIG_FILE="$ORE_DIR/ore.conf"
 DEFAULT_RPC="https://api.mainnet-beta.solana.com"
-BASE_PRIORITY_FEE="400000" # This is the base priority fee before any presets
-DEFAULT_THREADS="6"
+BASE_PRIORITY_FEE="200000" # This is the base priority fee before any presets
+DEFAULT_THREADS="4"
 KEYPAIR_PATH="$HOME/.config/solana/id.json"
 
 # Create ORE directory
