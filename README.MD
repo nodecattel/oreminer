@@ -15,13 +15,17 @@ Before running the script, ensure you have the following installed:
 - Rust and Cargo (The script will attempt to install these if they're not present)
 - Solana CLI (Also installed by the script if not present)
 
+### Give permission for script become executable
+
+```bash
+chmod +x install-ore.sh ore.sh
+```
 ### Installation
 
 Navigate to the cloned repository directory and run the `install-ore.sh` script to set up the necessary components:
 
 ```bash
 cd ore
-chmod +x install-ore.sh
 ./install-ore.sh
 ```
 
