@@ -5,7 +5,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
 EOF
-echo -e "Version 0.1.0 - Ore Miner"
+echo -e "Version 0.1.1 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Initial variable settings
@@ -40,6 +40,12 @@ if [ $exitstatus != 0 ]; then
     echo "No thread count entered, using default."
     THREADS=$DEFAULT_THREADS
 fi
+
+# Confirm and update config file
+echo "RPC=${RPC}" > "$CONFIG_FILE"
+echo "PRIORITY_FEE=${PRIORITY_FEE}" >> "$CONFIG_FILE"
+echo "THREADS=${THREADS}" >> "$CONFIG_FILE"
+echo "KEYPAIR_PATH=${KEYPAIR_PATH}" >> "$CONFIG_FILE"
 
 # Generate Solana keypair if it does not exist
 if [ ! -f "$KEYPAIR_PATH" ]; then
