@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Version Information and Credits
-echo -e "\033[0;32m" # Start green color
+echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
 EOF
 echo -e "Version 0.1.0 - Ore Miner"
-echo -e "Made by NodeCattel\033[0m" # End green color
+echo -e "Made by NodeCattel\033[0m"
 
 # Initial variable settings
 ORE_DIR="$HOME/.ore"
