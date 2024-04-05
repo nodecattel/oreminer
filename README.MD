@@ -2,7 +2,9 @@
 
 This code is experimental and provided "as is", without warranty of any kind. Use it at your own risk. It's under development, and its features may change. Always back up your data before use. Contributions and feedback are welcome.
 
-This script automates the setup and running of the Ore CLI for $ORE mining operations on Soylana Manlet, ensuring you're always running the latest version and simplifying the mining setup process.
+The script automates the setup and running of the Ore CLI for $ORE mining operations on Soylana Manlet, ensuring you're always running the latest version and simplifying the mining setup process.
+
+$ORE token address `oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz`
 
 ## Quick Start 🛠️
 
