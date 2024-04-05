@@ -52,7 +52,7 @@ After installation, you can start the mining process by running:
 
 ### Change default variable config manually
 
-To change your setting please set up in ore.conf located in `.ore`
+To change your setting please set up in `ore.conf` located at `$HOME/.ore`
 ```bash
 cd $HOME/.ore
 nano ore.conf
