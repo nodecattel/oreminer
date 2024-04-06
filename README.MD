@@ -67,16 +67,16 @@ Then copy the output to your external wallet
 ### Useful Links
 
 Ore Cli's creates
-`https://crates.io/crates/ore-cli`
+```https://crates.io/crates/ore-cli```
 
 HardHatChad's Ore repository
-`https://github.com/HardhatChad/ore`
+```https://github.com/HardhatChad/ore```
 
 Dune $ORE PoW Mining on Soylana Manlet
-`https://dune.com/rawrmaan/ore-mining-solana`
+```https://dune.com/rawrmaan/ore-mining-solana```
 
 `$ORE` Price chart
-`https://birdeye.so/token/oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz?chain=solana`
+```https://birdeye.so/token/oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz?chain=solana```
 
 
 If you find values to the scripts here please [Follow NodeCattel on X](https://twitter.com/nodecattel)
