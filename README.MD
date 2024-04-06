@@ -39,7 +39,7 @@ Follow the on-screen instructions to complete the installation. The script will:
 
 - Install Rust and Cargo
 - Install the Solana CLI
-- Install and update the Ore CLI to the latest version `https://crates.io/crates/ore-cli`
+- Install and update the Ore CLI to the latest version
 - Set executable permissions for `ore.sh`
 - Optionally run `ore.sh` for further setup
 
@@ -63,5 +63,20 @@ nano ore.conf
 cat $HOME/.config/solana/id.json
 ```
 Then copy the output to your external wallet
+
+### Useful Links
+
+Ore Cli's creates
+`https://crates.io/crates/ore-cli`
+
+HardHatChad's Ore repository
+`https://github.com/HardhatChad/ore`
+
+Dune $ORE PoW Mining on Soylana Manlet
+`https://dune.com/rawrmaan/ore-mining-solana`
+
+`$ORE` Price chart
+`https://birdeye.so/token/oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz?chain=solana`
+
 
 If you find values to the scripts here please [Follow NodeCattel on X](https://twitter.com/nodecattel)
