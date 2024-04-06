@@ -25,7 +25,7 @@ Before running the script, ensure you have the following installed:
 ### Give permission for script become executable
 
 ```bash
-chmod +x install-ore.sh ore.sh ore2.sh
+chmod +x install-ore.sh ore.sh
 ```
 ### Installation 💻
 
