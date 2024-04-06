@@ -50,11 +50,6 @@ After installation, you can start the mining process by running:
 ```bash
 ./ore.sh
 ```
-*** test version 0.1.3 run with ***
-
-```bash
-./ore2.sh
-```
 
 ### Change default variable config manually
 
