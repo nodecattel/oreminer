@@ -39,7 +39,7 @@ Follow the on-screen instructions to complete the installation. The script will:
 
 - Install Rust and Cargo
 - Install the Solana CLI
-- Install and update the Ore CLI to the latest version
+- Install and update the Ore CLI to the latest version `https://crates.io/crates/ore-cli`
 - Set executable permissions for `ore.sh`
 - Optionally run `ore.sh` for further setup
 
