@@ -56,8 +56,8 @@ while true; do
 
     # Analyze output for "Max retries" error
     if grep -q "Max retries" $TMP_OUTPUT; then
-        echo -e "${RED}Encountered 'Max retries' error, retrying in 5 seconds...${NC}"
-        sleep 5
+        echo -e "${RED}Encountered 'Max retries' error, retrying in 2 seconds...${NC}"
+        sleep 2
     elif [ $EXIT_STATUS -ne 0 ]; then
         echo -e "${RED}Encountered an error, stopping.${NC}"
         break
