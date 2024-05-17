@@ -63,8 +63,8 @@ cargo build --release
 
 # Add ore binary to PATH
 echo "Adding ore binary to PATH..."
-export PATH="$HOME/ore-cli/target/release:$PATH"
-echo 'export PATH="$HOME/ore-cli/target/release:$PATH"' >> ~/.bashrc
+export PATH="$HOME/oreminer/ore-cli/target/release:$PATH"
+echo 'export PATH="$HOME/oreminer/ore-cli/target/release:$PATH"' >> ~/.bashrc
 
 echo "Ore CLI has been updated to the latest version."
 
