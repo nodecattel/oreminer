@@ -5,9 +5,9 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.1.3 - Ore Miner"
+echo -e "Version 0.2.0 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
