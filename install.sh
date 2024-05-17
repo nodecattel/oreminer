@@ -71,7 +71,6 @@ read -p "Do you wish to switch to 'devnet' environment for testing? [Y/n] " devn
 if [[ "$devnet_answer" =~ ^[Yy]$ ]]; then
     echo "Switching to 'devnet'..."
     solana config set --url d
-    solana-keygen new
     solana airdrop 1
     echo "You are now on 'devnet'. To switch back to 'mainnet', run:"
     echo "solana config set --url m"
