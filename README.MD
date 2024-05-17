@@ -21,7 +21,7 @@ Before running the script, ensure you have the following installed:
 
 - Rust and Cargo (The script will attempt to install these if they're not present)
 - Solana CLI (Also installed by the script if not present)
-
+- (Recommended) Private RPC endpoints for fast & secure mining hash submission. You can use our referal link for [Quicknode here](https://www.quicknode.com/?via=nodecattel)
 ### Give permission for script become executable
 
 ```bash
