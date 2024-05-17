@@ -16,7 +16,7 @@ CONFIG_FILE="$ORE_DIR/ore.conf"
 
 # Default values
 DEFAULT_RPC="https://api.mainnet-beta.solana.com"
-BASE_PRIORITY_FEE="200000"  # This is the base priority fee before any presets
+BASE_PRIORITY_FEE="50000"  # This is the base priority fee before any presets
 DEFAULT_THREADS="4"
 DEFAULT_KEYPAIR_PATH="$HOME/.config/solana/id.json"
 
