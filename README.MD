@@ -11,8 +11,8 @@ $ORE token address `oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz`
 To get started with the Ore Miner Auto Script, clone this repository to your local machine using the following command:
 
 ```bash
-git clone https://github.com/nodecattel/ore.git
-cd ore
+git clone https://github.com/nodecattel/oreminer.git
+cd oreminer
 ```
 
 ### Prerequisites ✅
