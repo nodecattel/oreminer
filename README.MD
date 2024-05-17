@@ -48,6 +48,7 @@ Follow the on-screen instructions to complete the installation. The script will:
 After installation, you can start the mining process by running:
 
 ```bash
+source ~/.bashrc
 ./ore.sh
 ```
 
