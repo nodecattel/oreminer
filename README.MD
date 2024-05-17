@@ -25,14 +25,14 @@ Before running the script, ensure you have the following installed:
 ### Give permission for script become executable
 
 ```bash
-chmod +x install-ore.sh ore.sh
+chmod +x install.sh ore.sh
 ```
 ### Installation 💻
 
-Navigate to the cloned repository directory and run the `install-ore.sh` script to set up the necessary components:
+Navigate to the cloned repository directory and run the `install.sh` script to set up the necessary components:
 
 ```bash
-./install-ore.sh
+./install.sh
 ```
 
 Follow the on-screen instructions to complete the installation. The script will:
