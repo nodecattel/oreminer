@@ -62,7 +62,7 @@ nano ore.conf
 ```bash
 cat $HOME/.config/solana/id.json
 ```
-Then copy the output to your external wallet
+Then copy the output to your external wallet like Phantom, Backpack
 
 ### Useful Links
 
