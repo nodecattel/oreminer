@@ -28,6 +28,10 @@ sudo apt install -y build-essential
 echo "Installing Solana CLI..."
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
 
+# Ensure Solana is in the PATH
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+source $HOME/.local/share/solana/install/active_release/env
+
 # Function to clone or update a repository
 clone_or_update_repo() {
     local repo_url=$1
