@@ -89,7 +89,7 @@ echo "The current installed version of Ore CLI is:"
 ore --version
 
 # Give execution permission to ore.sh
-ORE_SH_PATH="$HOME/ore/ore.sh" # Update with the actual path
+ORE_SH_PATH="$HOME/oreminer/ore.sh" # Update with the actual path
 if [ -f "$ORE_SH_PATH" ]; then
     chmod +x "$ORE_SH_PATH"
     echo "Executable permissions set for ore.sh."
