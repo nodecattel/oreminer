@@ -19,6 +19,7 @@ DEFAULT_RPC="https://api.mainnet-beta.solana.com"
 BASE_PRIORITY_FEE="50000"  # This is the base priority fee before any presets
 DEFAULT_THREADS="4"
 DEFAULT_KEYPAIR_PATH="$HOME/.config/solana/id.json"
+DEFAULT_BUFFER_TIME="2"
 
 # Ensure the ORE directory exists
 mkdir -p "$ORE_DIR"
@@ -47,6 +48,10 @@ echo "Enter your keypair path (Current: ${KEYPAIR_PATH:-$DEFAULT_KEYPAIR_PATH}):
 read -r input_keypair
 KEYPAIR_PATH="${input_keypair:-${KEYPAIR_PATH:-$DEFAULT_KEYPAIR_PATH}}"
 
+echo "Enter buffer time in seconds (Current: ${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}): "
+read -r input_buffer_time
+BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
+
 # Confirm and update the config file
 echo "Updating configuration..."
 {
@@ -54,13 +59,10 @@ echo "Updating configuration..."
     echo "PRIORITY_FEE=$PRIORITY_FEE"
     echo "THREADS=$THREADS"
     echo "KEYPAIR_PATH=$KEYPAIR_PATH"
+    echo "BUFFER_TIME=$BUFFER_TIME"
 } > "$CONFIG_FILE"
 echo "Configuration updated."
 
-# Below, add any further logic to use these configurations, such as initiating mining
-# For example, showing the configuration:
-echo -e "\nCurrent Configuration:"
-cat "$CONFIG_FILE"
 # Generate Solana keypair if it does not exist
 if [ ! -f "$KEYPAIR_PATH" ]; then
     echo -e "\033[0;32mGenerating a new Solana keypair...\033[0m"
@@ -120,13 +122,13 @@ echo "RPC URL: $RPC"
 echo "Keypair Path: $KEYPAIR_PATH"
 echo "Priority Fee: $ADJUSTED_PRIORITY_FEE"
 echo "Threads: $THREADS"
+echo "Buffer Time: $BUFFER_TIME"
 echo "Wallet Address: $WALLET_ADDRESS"
 
 # Start the mining operation
 while :; do
     echo "Mining operation started. Press CTRL+C to stop."
-    # Execute the actual command to start mining, replace with the correct command as needed.
-    ore --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$ADJUSTED_PRIORITY_FEE" mine --threads "$THREADS"
+    ore --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$ADJUSTED_PRIORITY_FEE" mine --threads "$THREADS" --buffer-time "$BUFFER_TIME"
     echo -e "\033[0;32mMining process exited, restarting in 3 seconds...\033[0m"
     sleep 3
 done
