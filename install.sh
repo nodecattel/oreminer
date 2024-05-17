@@ -30,6 +30,7 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
 
 # Ensure Solana is in the PATH
 export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
 
 # Function to clone or update a repository
 clone_or_update_repo() {
@@ -63,7 +64,7 @@ cargo build --release
 # Add ore binary to PATH
 echo "Adding ore binary to PATH..."
 export PATH="$HOME/ore-cli/target/release:$PATH"
-echo 'export PATH="$HOME/ore-cli/target/release:$PATH"' >> ~/.profile
+echo 'export PATH="$HOME/ore-cli/target/release:$PATH"' >> ~/.bashrc
 
 echo "Ore CLI has been updated to the latest version."
 
