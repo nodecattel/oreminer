@@ -25,7 +25,7 @@ Before running the script, ensure you have the following installed:
 ### Give permission for script become executable
 
 ```bash
-chmod +x install.sh ore.sh
+chmod +x install.sh ore.sh claim.sh
 ```
 ### Installation 💻
 
