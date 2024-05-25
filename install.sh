@@ -50,11 +50,11 @@ clone_or_update_repo() {
 
 # Clone or update Ore repositories
 clone_or_update_repo "https://github.com/hardhatchad/ore" "ore"
-clone_or_update_repo "https://github.com/hardhatchad/ore-cli" "ore-cli"
+clone_or_update_repo "https://github.com/pmcochrane/ore-cli" "ore-cli"
 clone_or_update_repo "https://github.com/hardhatchad/drillx" "drillx"
 
 echo "Checking out the v2 branches..."
-cd ore && git checkout hardhat/v2 && cd ..
+cd ore && git checkout e13a5bd889892ff46308d8787beef205a96c7f24 && cd ..
 cd ore-cli && git checkout hardhat/v2 && cd ..
 
 echo "Building ore-cli..."
