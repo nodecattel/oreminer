@@ -6,7 +6,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.2.0 - Ore Cli installer"
+echo -e "Version 0.2.1 - Ore Cli installer + PMC ui"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -49,9 +49,9 @@ clone_or_update_repo() {
 }
 
 # Clone or update Ore repositories
-clone_or_update_repo "https://github.com/hardhatchad/ore" "ore"
+clone_or_update_repo "https://github.com/regolith-labs/ore" "ore"
 clone_or_update_repo "https://github.com/pmcochrane/ore-cli" "ore-cli"
-clone_or_update_repo "https://github.com/hardhatchad/drillx" "drillx"
+clone_or_update_repo "https://github.com/regolith-labs/drillx" "drillx"
 
 echo "Checking out the v2 branches..."
 cd ore && git checkout e13a5bd889892ff46308d8787beef205a96c7f24 && cd ..
