@@ -6,7 +6,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.2.1 - Ore Cli installer + PMC ui"
+echo -e "Version 0.2.2 - Ore Cli installer + PMC ui"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
