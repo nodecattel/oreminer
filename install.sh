@@ -33,6 +33,13 @@ else
     # Ensure Solana is in the PATH
     export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
     echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+    source ~/.bashrc
+fi
+
+# Verify Solana CLI installation
+if ! command -v solana &> /dev/null; then
+    echo "Solana CLI installation failed or not found in PATH."
+    exit 1
 fi
 
 # Install ORE-CLI tags/1.0.0-alpha
