@@ -32,23 +32,8 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
 export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
 echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
 
-# Function to clone or update a repository
-clone_or_update_repo() {
-    local repo_url=$1
-    local repo_dir=$2
-    if [ -d "$repo_dir" ]; then
-        echo "Updating repository $repo_dir..."
-        cd "$repo_dir"
-        git fetch
-        git pull
-        cd ..
-    else
-        echo "Cloning repository $repo_url..."
-        git clone "$repo_url"
-    fi
-}
-
 # Install ORE-CLI tags/1.0.0-alpha
+echo "Installing ORE-CLI..."
 cargo install ore-cli@1.0.0-alpha
 echo "Ore CLI has been updated to the latest version."
 
