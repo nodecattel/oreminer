@@ -17,9 +17,9 @@ CONFIG_FILE="$ORE_DIR/ore.conf"
 # Default values
 DEFAULT_RPC="https://api.mainnet-beta.solana.com"
 BASE_PRIORITY_FEE="1000"  # This is the base priority fee before any presets
-DEFAULT_THREADS="2"
+DEFAULT_THREADS="1"
 DEFAULT_KEYPAIR_PATH="$HOME/.config/solana/id.json"
-DEFAULT_BUFFER_TIME="2"
+DEFAULT_BUFFER_TIME="5"
 
 # Ensure the ORE directory exists
 mkdir -p "$ORE_DIR"
