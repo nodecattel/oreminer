@@ -4,9 +4,9 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.0.0-alpha
 EOF
-echo -e "Version 0.2.2 - Ore Cli installer + PMC ui"
+echo -e "Version 0.2.0 - Ore Cli installer + PMC ui"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -48,24 +48,8 @@ clone_or_update_repo() {
     fi
 }
 
-# Clone or update Ore repositories
-clone_or_update_repo "https://github.com/regolith-labs/ore" "ore"
-clone_or_update_repo "https://github.com/regolith-labs/ore-cli" "ore-cli"
-clone_or_update_repo "https://github.com/regolith-labs/drillx" "drillx"
-
-echo "Checking out the v2 branches..."
-cd ore && git checkout hardhat/v2 && cd ..
-cd ore-cli && git checkout hardhat/v2 && cd ..
-
-echo "Building ore-cli..."
-cd ore-cli
-cargo build --release
-
-# Add ore binary to PATH
-echo "Adding ore binary to PATH..."
-export PATH="$HOME/oreminer/ore-cli/target/release:$PATH"
-echo 'export PATH="$HOME/oreminer/ore-cli/target/release:$PATH"' >> ~/.bashrc
-
+# Install ORE-CLI tags/1.0.0-alpha
+cargo install ore-cli@1.0.0-alpha
 echo "Ore CLI has been updated to the latest version."
 
 # Prompt to switch to devnet
