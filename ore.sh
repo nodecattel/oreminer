@@ -55,14 +55,12 @@ show_help() {
 # Function to fetch the balance of an account
 fetch_balance() {
     echo "Fetching balance for wallet address: ${WALLET_ADDRESS}"
-    # Add the actual command to fetch balance here
     ore balance --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
 # Function to benchmark the machine's hashrate
 benchmark() {
     echo "Benchmarking hashrate..."
-    # Add the actual benchmarking command here
     ore benchmark
 }
 
@@ -88,14 +86,12 @@ claim_rewards() {
     done
     
     echo "Claiming available mining rewards..."
-    # Add the actual command to claim rewards here
     ore claim --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $BENEFICIARY
 }
 
 # Function to fetch the reward rate for each difficulty level
 fetch_rewards() {
     echo "Fetching reward rate for each difficulty level..."
-    # Add the actual command to fetch reward rates here
     ore rewards
 }
 
@@ -121,8 +117,28 @@ stake_ore() {
     done
     
     echo "Staking ore to earn a multiplier on your mining rewards..."
-    # Add the actual command to stake ore here
     ore stake --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $SENDER
+}
+
+# Function to close onchain accounts to recover rent
+close_accounts() {
+    echo "Closing onchain accounts to recover rent..."
+    ore close --rpc "$RPC" --keypair "$KEYPAIR_PATH"
+}
+
+# Function to run mining operation in background
+run_mining() {
+    while :; do
+        echo "Mining operation started. Press CTRL+C to stop."
+        ore --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$ADJUSTED_PRIORITY_FEE" mine --threads "$THREADS" --buffer-time "$BUFFER_TIME"
+        if [[ $? -ne 0 ]]; then
+            echo -e "\033[0;32mMining process exited with error, restarting in 3 seconds...\033[0m"
+            sleep 3
+        else
+            echo -e "\033[0;32mMining process completed successfully.\033[0m"
+            break
+        fi
+    done
 }
 
 # Handle commands
@@ -223,6 +239,7 @@ case "$COMMAND" in
 
         # Update config with the latest settings and wallet address
         echo "ADJUSTED_PRIORITY_FEE=${ADJUSTED_PRIORITY_FEE}" >> "$CONFIG_FILE"
+       
         source "$CONFIG_FILE"
 
         # Confirm to start mining with the wallet address on a new line
@@ -240,13 +257,8 @@ case "$COMMAND" in
         echo "Buffer Time: $BUFFER_TIME"
         echo "Wallet Address: $WALLET_ADDRESS"
 
-        # Start the mining operation
-        while :; do
-            echo "Mining operation started. Press CTRL+C to stop."
-            ore --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$ADJUSTED_PRIORITY_FEE" mine --threads "$THREADS" --buffer-time "$BUFFER_TIME"
-            echo -e "\033[0;32mMining process exited, restarting in 3 seconds...\033[0m"
-            sleep 3
-        done
+        # Run the mining operation
+        run_mining
         ;;
     *)
         show_help
