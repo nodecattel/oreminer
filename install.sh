@@ -24,13 +24,16 @@ echo "Installing build tools..."
 sudo apt update
 sudo apt install -y build-essential
 
-# Install Solana CLI
-echo "Installing Solana CLI..."
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
-
-# Ensure Solana is in the PATH
-export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+# Check if Solana CLI is installed
+if command -v solana &> /dev/null; then
+    echo "Solana CLI is already installed. Skipping installation."
+else
+    echo "Installing Solana CLI..."
+    sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
+    # Ensure Solana is in the PATH
+    export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+    echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+fi
 
 # Install ORE-CLI tags/1.0.0-alpha
 echo "Installing ORE-CLI..."
@@ -47,7 +50,6 @@ if [[ "$devnet_answer" =~ ^[Yy]$ ]]; then
     else
         solana-keygen new
     fi
-    solana airdrop 1
     echo "You are now on 'devnet'. To switch back to 'mainnet', run:"
     echo "solana config set --url https://api.mainnet-beta.solana.com"
 else
@@ -71,7 +73,7 @@ fi
 read -p "Do you wish to continue with setting up ore.sh? [Y/n] " answer
 if [[ "$answer" =~ ^[Yy]$ ]]; then
     echo "Proceeding with ore.sh setup..."
-    "$ORE_SH_PATH"
+    ./ore.sh mine
 else
     echo "Setup aborted. Run ore.sh manually to complete setup."
 fi
