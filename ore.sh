@@ -40,7 +40,7 @@ show_help() {
     echo ""
     echo "Usage: ./ore.sh <COMMAND>"
     echo ""
-    echo -e "run\033[0;32m ./ore.sh mine\033[0m"
+    echo -e "To run: \033[0;32m ./ore.sh mine\033[0m"
     echo ""
     echo "Commands:"
     echo "  balance    Fetch the Ore balance of an account"
@@ -55,12 +55,14 @@ show_help() {
 # Function to fetch the balance of an account
 fetch_balance() {
     echo "Fetching balance for wallet address: ${WALLET_ADDRESS}"
+    # Add the actual command to fetch balance here
     ore balance --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
 # Function to benchmark the machine's hashrate
 benchmark() {
     echo "Benchmarking hashrate..."
+    # Add the actual benchmarking command here
     ore benchmark
 }
 
@@ -86,12 +88,14 @@ claim_rewards() {
     done
     
     echo "Claiming available mining rewards..."
+    # Add the actual command to claim rewards here
     ore claim --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $BENEFICIARY
 }
 
 # Function to fetch the reward rate for each difficulty level
 fetch_rewards() {
     echo "Fetching reward rate for each difficulty level..."
+    # Add the actual command to fetch reward rates here
     ore rewards
 }
 
@@ -117,12 +121,14 @@ stake_ore() {
     done
     
     echo "Staking ore to earn a multiplier on your mining rewards..."
+    # Add the actual command to stake ore here
     ore stake --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $SENDER
 }
 
 # Function to close onchain accounts to recover rent
 close_accounts() {
     echo "Closing onchain accounts to recover rent..."
+    # Add the actual command to close accounts here
     ore close --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
@@ -162,6 +168,10 @@ case "$COMMAND" in
         stake_ore "$@"
         ;;
     mine)
+        # Display Ore Cli version
+        ore_version=$(ore --version)
+        echo "Cli Version: $ore_version"
+
         # Configuration setup with user input, pre-filling with current or default values
         echo "Enter your RPC URL (Current: ${RPC:-$DEFAULT_RPC}): "
         read -r input_rpc
@@ -186,6 +196,7 @@ case "$COMMAND" in
         # Confirm and update the config file
         echo "Updating configuration..."
         {
+            echo "Cli Version: $ore_version"
             echo "RPC=$RPC"
             echo "PRIORITY_FEE=$PRIORITY_FEE"
             echo "THREADS=$THREADS"
@@ -239,7 +250,6 @@ case "$COMMAND" in
 
         # Update config with the latest settings and wallet address
         echo "ADJUSTED_PRIORITY_FEE=${ADJUSTED_PRIORITY_FEE}" >> "$CONFIG_FILE"
-       
         source "$CONFIG_FILE"
 
         # Confirm to start mining with the wallet address on a new line
@@ -250,6 +260,7 @@ case "$COMMAND" in
 
         # Display configuration
         echo -e "\033[0;32mStarting mining operation with the following configuration:\033[0m"
+        echo "Cli Version: $ore_version"
         echo "RPC URL: $RPC"
         echo "Keypair Path: $KEYPAIR_PATH"
         echo "Priority Fee: $ADJUSTED_PRIORITY_FEE"
