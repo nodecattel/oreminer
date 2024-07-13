@@ -45,7 +45,15 @@ Follow the on-screen instructions to complete the installation. The script will:
 
 ### Running Ore Miner ⛏️
 
-After installation, you can start the mining process by running:
+(Devnet) Get SOL testnet by running this command:
+
+```
+solana config set --url d
+solana airdrop 1
+```
+try again if there is an error with rate limit
+
+After installation, fund your wallet and you can start the mining process by running:
 
 ```bash
 ./ore.sh mine
