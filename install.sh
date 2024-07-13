@@ -6,7 +6,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.0.0-alpha
 EOF
-echo -e "Version 0.2.0 - Ore Cli installer + PMC ui"
+echo -e "Version 0.2.1 - Ore Cli installer + PMC ui"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -42,10 +42,17 @@ if ! command -v solana &> /dev/null; then
     exit 1
 fi
 
-# Install ORE-CLI tags/1.0.0-alpha
-echo "Installing ORE-CLI..."
-cargo install ore-cli@1.0.0-alpha
-echo "Ore CLI has been updated to the latest version."
+# Install ORE-CLI from source
+echo "Installing ORE-CLI from source..."
+# Clone the ORE-CLI repository
+git clone https://github.com/regolith-labs/ore-cli
+cd ore-cli
+# Build the ORE-CLI binary
+cargo build --release
+# Move the binary to the appropriate location
+cp target/release/ore $HOME/.cargo/bin/ore
+cd ..
+echo "Ore CLI has been installed from source and updated to the latest version."
 
 # Prompt to switch to devnet
 read -p "Do you wish to switch to 'devnet' environment for testing? [Y/n] " devnet_answer
