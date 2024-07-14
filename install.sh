@@ -12,6 +12,16 @@ echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 # Exit script if any command fails
 set -e
 
+# Detect OS
+OS="$(uname -s)"
+case "${OS}" in
+    Linux*)     OS_TYPE=Linux;;
+    Darwin*)    OS_TYPE=Mac;;
+    *)          OS_TYPE="UNKNOWN:${OS}"
+esac
+
+echo "Detected OS: $OS_TYPE"
+
 # Install Rust and Cargo
 echo "Installing Rust and Cargo..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -19,10 +29,20 @@ curl https://sh.rustup.rs -sSf | sh -s -- -y
 # Ensure Cargo is in the PATH
 source $HOME/.cargo/env
 
-# Install build tools (Ubuntu/Debian specific)
-echo "Installing build tools..."
-sudo apt update
-sudo apt install -y build-essential
+if [ "$OS_TYPE" == "Linux" ]; then
+    # Install build tools (Ubuntu/Debian specific)
+    echo "Installing build tools..."
+    sudo apt update
+    sudo apt install -y build-essential
+
+elif [ "$OS_TYPE" == "Mac" ]; then
+    echo "Installing build tools for Mac..."
+    xcode-select --install || echo "Xcode command line tools already installed."
+
+else
+    echo "Unsupported OS type: $OS_TYPE"
+    exit 1
+fi
 
 # Check if Solana CLI is installed
 if command -v solana &> /dev/null; then
@@ -31,9 +51,15 @@ else
     echo "Installing Solana CLI..."
     sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
     # Ensure Solana is in the PATH
-    export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-    echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
-    source ~/.bashrc
+    if [ "$OS_TYPE" == "Linux" ]; then
+        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+        source ~/.bashrc
+    elif [ "$OS_TYPE" == "Mac" ]; then
+        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.zshrc
+        source ~/.zshrc
+    fi
 fi
 
 # Verify Solana CLI installation
@@ -42,12 +68,20 @@ if ! command -v solana &> /dev/null; then
     exit 1
 fi
 
-# Install ORE-CLI from source
-echo "Installing ORE-CLI from source..."
-# Clone the ORE-CLI repository
-git clone https://github.com/regolith-labs/ore-cli
-cd ore-cli
+# Clone or update ORE-CLI from source
+ORE_CLI_DIR="$HOME/ore-cli"
+if [ -d "$ORE_CLI_DIR" ]; then
+    echo "Updating ORE-CLI repository..."
+    cd $ORE_CLI_DIR
+    git pull origin main
+else
+    echo "Cloning ORE-CLI repository..."
+    git clone https://github.com/regolith-labs/ore-cli $ORE_CLI_DIR
+    cd $ORE_CLI_DIR
+fi
+
 # Build the ORE-CLI binary
+echo "Building ORE-CLI..."
 cargo build --release
 # Move the binary to the appropriate location
 cp target/release/ore $HOME/.cargo/bin/ore
