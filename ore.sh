@@ -1,5 +1,12 @@
 #!/bin/bash
-source ~/.profile
+
+# Detect OS and source appropriate profile file
+OS="$(uname)"
+if [[ "$OS" == "Darwin" ]]; then
+    source ~/.profile
+else
+    source ~/.bashrc
+fi
 
 # Version Information and Credits
 echo -e "\033[0;32m"
@@ -7,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.2.0 - Ore Miner"
+echo -e "Version 0.2.1 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -31,8 +38,7 @@ else
     echo "No existing configuration found. Using default values."
 fi
 
-# Detect OS and set appropriate commands
-OS="$(uname)"
+# Set appropriate commands based on the OS
 if [[ "$OS" == "Darwin" ]]; then
     ECHO="echo"
     SLEEP="sleep"
