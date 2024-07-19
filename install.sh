@@ -4,7 +4,7 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.0.0-alpha
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.0.0-alpha.3
 EOF
 echo -e "Version 0.2.1 - Ore Cli installer + PMC ui"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
@@ -95,13 +95,21 @@ case "$env_choice" in
 esac
 
 # Clone or update ORE-CLI from source
-ORE_CLI_DIR="$HOME/ore-cli"
+OREMINER_DIR="$HOME/oreminer"
+ORE_CLI_DIR="$OREMINER_DIR/ore-cli"
 if [ -d "$ORE_CLI_DIR" ]; then
     echo "Updating ORE-CLI repository..."
     cd $ORE_CLI_DIR
-    git pull origin master || git pull origin main
+    git remote set-url origin https://github.com/regolith-labs/ore-cli
+    if git pull origin master || git pull origin main; then
+        echo "ORE-CLI repository is up to date."
+    else
+        echo "Merge conflicts detected. Please resolve them manually."
+        exit 1
+    fi
 else
     echo "Cloning ORE-CLI repository..."
+    mkdir -p $OREMINER_DIR
     git clone https://github.com/regolith-labs/ore-cli $ORE_CLI_DIR
     cd $ORE_CLI_DIR
 fi
@@ -117,9 +125,10 @@ echo "Ore CLI has been installed from source and updated to the latest version."
 # Print the current installed version of Ore CLI
 echo "The current installed version of Ore CLI is:"
 ore --version
+echo -e "\033[0;35m by NodeCattel\033[0m"
 
 # Give execution permission to ore.sh
-ORE_SH_PATH="$HOME/oreminer/ore.sh" # Update with the actual path
+ORE_SH_PATH="$OREMINER_DIR/ore.sh" # Update with the actual path
 if [ -f "$ORE_SH_PATH" ]; then
     chmod +x "$ORE_SH_PATH"
     echo "Executable permissions set for ore.sh."
@@ -134,5 +143,5 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
     cd $(dirname "$ORE_SH_PATH") # Change directory to where ore.sh is located
     ./ore.sh mine
 else
-    echo -e "Setup aborted. Run ore.sh manually to complete setup.\033[0;35m by NodeCattel\033[0m"
+    echo -e "Setup aborted. Run ore.sh manually to complete setup."
 fi
