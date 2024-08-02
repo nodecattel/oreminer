@@ -4,9 +4,9 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.0.0-alpha.3
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.1.0
 EOF
-echo -e "Version 0.2.1 - Ore Cli installer + PMC ui"
+echo -e "Version 0.2.2 - Ore Cli installer"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -91,6 +91,7 @@ case "$env_choice" in
         ;;
     *)
         echo "Invalid choice. Staying on current environment."
+        exit 1
         ;;
 esac
 
@@ -114,12 +115,29 @@ else
     cd $ORE_CLI_DIR
 fi
 
+# Additional steps for devnet
+if [[ "$env_choice" =~ [Dd] ]]; then
+    echo "Setting up additional repository for devnet..."
+    cd $OREMINER_DIR
+    if [ -d "$OREMINER_DIR/ore" ]; then
+        cd ore
+        git remote set-url origin https://github.com/regolith-labs/ore
+        git fetch origin
+    else
+        git clone https://github.com/regolith-labs/ore.git
+        cd ore
+    fi
+    git checkout hardhat/devnet-prerelease
+    cd $ORE_CLI_DIR
+    git checkout hardhat/devnet-prerelease
+fi
+
 # Build the ORE-CLI binary
 echo "Building ORE-CLI..."
 cargo build --release
+
 # Move the binary to the appropriate location
 cp target/release/ore $HOME/.cargo/bin/ore
-cd ..
 echo "Ore CLI has been installed from source and updated to the latest version."
 
 # Print the current installed version of Ore CLI
