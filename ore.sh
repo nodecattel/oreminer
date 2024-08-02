@@ -222,14 +222,12 @@ case "$COMMAND" in
         # Confirm and update the config file
         $ECHO "Updating configuration..."
         {
-            $ECHO "Cli Version: $ore_version"
             $ECHO "RPC=$RPC"
             $ECHO "PRIORITY_FEE=$PRIORITY_FEE"
             $ECHO "THREADS=$THREADS"
             $ECHO "KEYPAIR_PATH=$KEYPAIR_PATH"
             $ECHO "BUFFER_TIME=$BUFFER_TIME"
         } > "$CONFIG_FILE"
-        $ECHO "Configuration updated."
 
         # Generate Solana keypair if it does not exist
         if [ ! -f "$KEYPAIR_PATH" ]; then
@@ -243,7 +241,7 @@ case "$COMMAND" in
 
         # Extract the public key (wallet address) from the keypair
         WALLET_ADDRESS=$(solana-keygen pubkey "$KEYPAIR_PATH")
-        $ECHO "WALLET_ADDRESS=${WALLET_ADDRESS}" >> "$CONFIG_FILE"
+        echo "WALLET_ADDRESS=${WALLET_ADDRESS}" >> "$CONFIG_FILE"
 
         # Load the updated configuration
         source "$CONFIG_FILE"
@@ -262,11 +260,11 @@ case "$COMMAND" in
                 ;;
             2)
                 CHOICE="Fast"
-                ADJUSTED_PRIORITY_FEE=$((PRIORITY_FEE + PRIORITY_FEE * 25 / 100))
+                ADJUSTED_PRIORITY_FEE=$(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.25" | bc)
                 ;;
             3)
                 CHOICE="Chad"
-                ADJUSTED_PRIORITY_FEE=$((PRIORITY_FEE + PRIORITY_FEE * 50 / 100))
+                ADJUSTED_PRIORITY_FEE=$(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.50" | bc)
                 ;;
             *)
                 $ECHO "Invalid selection, exiting."
@@ -275,8 +273,9 @@ case "$COMMAND" in
         esac
 
         # Update config with the latest settings and wallet address
-        $ECHO "ADJUSTED_PRIORITY_FEE=${ADJUSTED_PRIORITY_FEE}" >> "$CONFIG_FILE"
-        source "$CONFIG_FILE"
+        {
+            $ECHO "ADJUSTED_PRIORITY_FEE=${ADJUSTED_PRIORITY_FEE}"
+        } >> "$CONFIG_FILE"
 
         # Confirm to start mining with the wallet address on a new line
         $ECHO -e "Selected preset: \033[1;32m${CHOICE}\033[0m"
