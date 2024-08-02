@@ -4,9 +4,9 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2 - 1.1.0
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 1.1.0
 EOF
-echo -e "Version 0.2.2 - Ore Cli installer"
+echo -e "Version 0.2.3 - Ore Cli installer"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -37,11 +37,9 @@ if [ "$OS_TYPE" == "Linux" ]; then
     echo "Installing build tools..."
     sudo apt update
     sudo apt install -y build-essential
-
 elif [ "$OS_TYPE" == "Mac" ]; then
     echo "Installing build tools for Mac..."
     xcode-select --install || echo "Xcode command line tools already installed."
-
 else
     echo "Unsupported OS type: $OS_TYPE"
     exit 1
@@ -55,13 +53,15 @@ else
     sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
     # Ensure Solana is in the PATH
     if [ "$OS_TYPE" == "Linux" ]; then
-        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
         echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
-        source ~/.bashrc
+        source ~/.profile
     elif [ "$OS_TYPE" == "Mac" ]; then
-        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
         echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.zshrc
-        source ~/.zshrc
+        source ~/.profile
     fi
 fi
 
@@ -95,6 +95,9 @@ case "$env_choice" in
         ;;
 esac
 
+# Determine the default branch name
+DEFAULT_BRANCH=$(git ls-remote --symref https://github.com/regolith-labs/ore-cli HEAD | awk '/^ref:/ {print $2}' | sed 's/refs\/heads\///')
+
 # Clone or update ORE-CLI from source
 OREMINER_DIR="$HOME/oreminer"
 ORE_CLI_DIR="$OREMINER_DIR/ore-cli"
@@ -102,16 +105,13 @@ if [ -d "$ORE_CLI_DIR" ]; then
     echo "Updating ORE-CLI repository..."
     cd $ORE_CLI_DIR
     git remote set-url origin https://github.com/regolith-labs/ore-cli
-    if git pull origin master || git pull origin main; then
-        echo "ORE-CLI repository is up to date."
-    else
-        echo "Merge conflicts detected. Please resolve them manually."
-        exit 1
-    fi
+    git fetch origin
+    git checkout $DEFAULT_BRANCH
+    git pull origin $DEFAULT_BRANCH
 else
     echo "Cloning ORE-CLI repository..."
     mkdir -p $OREMINER_DIR
-    git clone https://github.com/regolith-labs/ore-cli $ORE_CLI_DIR
+    git clone --branch $DEFAULT_BRANCH https://github.com/regolith-labs/ore-cli $ORE_CLI_DIR
     cd $ORE_CLI_DIR
 fi
 
