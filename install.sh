@@ -4,7 +4,7 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 1.1.0
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 1.1.0 mainnet
 EOF
 echo -e "Version 0.2.3 - Ore Cli installer"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
@@ -55,12 +55,12 @@ else
     if [ "$OS_TYPE" == "Linux" ]; then
         PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
         echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.bashrc
         source ~/.profile
     elif [ "$OS_TYPE" == "Mac" ]; then
         PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.zshrc
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.profile
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.zshrc
         source ~/.profile
     fi
 fi
@@ -115,6 +115,22 @@ else
     cd $ORE_CLI_DIR
 fi
 
+# Additional steps for mainnet
+if [[ "$env_choice" =~ [Mm] ]]; then
+    echo "Setting up additional repository for mainnet..."
+    cd $OREMINER_DIR
+    if [ -d "$OREMINER_DIR/ore" ]; then
+        cd ore
+        git remote set-url origin https://github.com/regolith-labs/ore
+        git fetch origin
+    else
+        git clone https://github.com/regolith-labs/ore.git
+        cd ore
+    fi
+    git checkout master
+    cd $ORE_CLI_DIR
+fi
+
 # Additional steps for devnet
 if [[ "$env_choice" =~ [Dd] ]]; then
     echo "Setting up additional repository for devnet..."
@@ -127,7 +143,7 @@ if [[ "$env_choice" =~ [Dd] ]]; then
         git clone https://github.com/regolith-labs/ore.git
         cd ore
     fi
-    git checkout hardhat/devnet-prerelease
+    git checkout master
     cd $ORE_CLI_DIR
     git checkout hardhat/devnet-prerelease
 fi
