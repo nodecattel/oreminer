@@ -143,7 +143,7 @@ if [[ "$env_choice" =~ [Dd] ]]; then
         git clone https://github.com/regolith-labs/ore.git
         cd ore
     fi
-    git checkout master
+    git checkout hardhat/devnet-prerelease
     cd $ORE_CLI_DIR
     git checkout hardhat/devnet-prerelease
 fi
