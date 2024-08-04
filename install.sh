@@ -50,7 +50,7 @@ if command -v solana &> /dev/null; then
     echo "Solana CLI is already installed. Skipping installation."
 else
     echo "Installing Solana CLI..."
-    sh -c "$(curl -sSfL https://release.solana.com/v1.18.4/install)"
+    sh -c "$(curl -sSfL https://release.solana.com/v1.18.20/install)"
     # Ensure Solana is in the PATH
     if [ "$OS_TYPE" == "Linux" ]; then
         PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
