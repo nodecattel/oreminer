@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.2.1 - Ore Miner"
+echo -e "Version 0.2.2 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -71,14 +71,12 @@ show_help() {
 # Function to fetch the balance of an account
 fetch_balance() {
     $ECHO "Fetching balance for wallet address: ${WALLET_ADDRESS}"
-    # Add the actual command to fetch balance here
     ore balance --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
 # Function to benchmark the machine's hashrate
 benchmark() {
     $ECHO "Benchmarking hashrate..."
-    # Add the actual benchmarking command here
     ore benchmark
 }
 
@@ -109,14 +107,12 @@ claim_rewards() {
     done
 
     $ECHO "Claiming available mining rewards..."
-    # Add the actual command to claim rewards here
     ore claim --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $BENEFICIARY $RECEIVER
 }
 
 # Function to fetch the reward rate for each difficulty level
 fetch_rewards() {
     $ECHO "Fetching reward rate for each difficulty level..."
-    # Add the actual command to fetch reward rates here
     ore rewards
 }
 
@@ -142,14 +138,12 @@ stake_ore() {
     done
 
     $ECHO "Staking ore to earn a multiplier on your mining rewards..."
-    # Add the actual command to stake ore here
     ore stake --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $SENDER
 }
 
 # Function to close onchain accounts to recover rent
 close_accounts() {
     $ECHO "Closing onchain accounts to recover rent..."
-    # Add the actual command to close accounts here
     ore close --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
@@ -251,7 +245,15 @@ case "$COMMAND" in
         $ECHO "1) Normal - Use default priority-fee setting"
         $ECHO "2) Fast - +25% increase to the priority-fee"
         $ECHO "3) Chad - +50% increase to the priority-fee"
-        read -p "Enter choice [1-3]: " preset_choice
+
+        while true; do
+            read -p "Enter choice [1-3]: " preset_choice
+            if [[ "$preset_choice" =~ ^[1-3]$ ]]; then
+                break
+            else
+                $ECHO "Invalid selection. Please enter a number between 1 and 3."
+            fi
+        done
 
         case $preset_choice in
             1)
@@ -260,15 +262,11 @@ case "$COMMAND" in
                 ;;
             2)
                 CHOICE="Fast"
-                ADJUSTED_PRIORITY_FEE=$(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.25" | bc)
+                ADJUSTED_PRIORITY_FEE=$(printf "%.0f" $(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.25" | bc))
                 ;;
             3)
                 CHOICE="Chad"
-                ADJUSTED_PRIORITY_FEE=$(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.50" | bc)
-                ;;
-            *)
-                $ECHO "Invalid selection, exiting."
-                exit 1
+                ADJUSTED_PRIORITY_FEE=$(printf "%.0f" $(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.50" | bc))
                 ;;
         esac
 
