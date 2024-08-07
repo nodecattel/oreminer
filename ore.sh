@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 0.2.4 - Ore Miner"
+echo -e "Version 0.2.3 - Ore Miner"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -93,18 +93,14 @@ fetch_busses() {
 # Function to claim available mining rewards
 claim_rewards() {
     local AMOUNT=""
-    local BENEFICIARY=""
     local RECEIVER=""
+    local PRIORITY_FEE=""
 
     while [[ "$1" != "" ]]; do
         case $1 in
             --amount)
                 shift
                 AMOUNT="--amount $1"
-                ;;
-            --beneficiary)
-                shift
-                BENEFICIARY="--beneficiary $1"
                 ;;
             --to)
                 shift
@@ -116,8 +112,12 @@ claim_rewards() {
         shift
     done
 
+    $ECHO "Enter desired priority fee in microlamports (default is 0): "
+    read -r input_fee
+    PRIORITY_FEE="${input_fee:-0}"
+
     $ECHO "Claiming available mining rewards..."
-    ore claim --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $BENEFICIARY $RECEIVER
+    ore claim --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" $AMOUNT $RECEIVER
 }
 
 # Function to fetch the reward rate for each difficulty level
@@ -232,9 +232,19 @@ case "$COMMAND" in
         read -r input_rpc
         RPC="${input_rpc:-${RPC:-$DEFAULT_RPC}}"
 
-        $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
-        read -r input_fee
-        PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
+        $ECHO "Enter dynamic fee URL (fill n or N if not using dynamic fees) (Current: ${DYNAMIC_FEE_URL:-None}): "
+        read -r input_dynamic_fee_url
+        if [[ "$input_dynamic_fee_url" =~ ^[Nn]$ ]]; then
+            DYNAMIC_FEE_URL=""
+            $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
+            read -r input_fee
+            PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
+        else
+            DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
+            $ECHO "Enter maximum dynamic fee (Current: ${DYNAMIC_FEE_MAX:-$DEFAULT_DYNAMIC_FEE_MAX}): "
+            read -r input_dynamic_fee_max
+            DYNAMIC_FEE_MAX="${input_dynamic_fee_max:-${DYNAMIC_FEE_MAX:-$DEFAULT_DYNAMIC_FEE_MAX}}"
+        fi
 
         $ECHO "Enter number of threads (Current: ${THREADS:-$DEFAULT_THREADS}): "
         read -r input_threads
@@ -247,14 +257,6 @@ case "$COMMAND" in
         $ECHO "Enter buffer time in seconds (Current: ${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}): "
         read -r input_buffer_time
         BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
-
-        $ECHO "Enter dynamic fee URL (leave empty if not using dynamic fees) (Current: ${DYNAMIC_FEE_URL:-None}): "
-        read -r input_dynamic_fee_url
-        DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
-
-        $ECHO "Enter maximum dynamic fee (Current: ${DYNAMIC_FEE_MAX:-$DEFAULT_DYNAMIC_FEE_MAX}): "
-        read -r input_dynamic_fee_max
-        DYNAMIC_FEE_MAX="${input_dynamic_fee_max:-${DYNAMIC_FEE_MAX:-$DEFAULT_DYNAMIC_FEE_MAX}}"
 
         # Confirm and update the config file
         $ECHO "Updating configuration..."
