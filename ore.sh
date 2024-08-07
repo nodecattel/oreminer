@@ -176,7 +176,7 @@ run_mining() {
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
             ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --threads "$THREADS" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee-max "$DYNAMIC_FEE_MAX"
         else
-            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$ADJUSTED_PRIORITY_FEE" --threads "$THREADS" --buffer-time "$BUFFER_TIME"
+            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --threads "$THREADS" --buffer-time "$BUFFER_TIME"
         fi
         if [[ $? -ne 0 ]]; then
             $ECHO "\033[0;32mMining process exited with error, restarting in 3 seconds...\033[0m"
@@ -287,55 +287,13 @@ case "$COMMAND" in
         # Load the updated configuration
         source "$CONFIG_FILE"
 
-        # Skip preset selection if dynamic fee URL is provided
-        if [[ -z "$DYNAMIC_FEE_URL" ]]; then
-            # Preset selection menu
-            $ECHO "Choose your mining speed preset:"
-            $ECHO "1) Normal - Use default priority-fee setting"
-            $ECHO "2) Fast - +25% increase to the priority-fee"
-            $ECHO "3) Chad - +50% increase to the priority-fee"
-
-            while true; do
-                read -p "Enter choice [1-3]: " preset_choice
-                if [[ "$preset_choice" =~ ^[1-3]$ ]]; then
-                    break
-                else
-                    $ECHO "Invalid selection. Please enter a number between 1 and 3."
-                fi
-            done
-
-            case $preset_choice in
-                1)
-                    CHOICE="Normal"
-                    ADJUSTED_PRIORITY_FEE=$PRIORITY_FEE
-                    ;;
-                2)
-                    CHOICE="Fast"
-                    ADJUSTED_PRIORITY_FEE=$(printf "%.0f" $(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.25" | bc))
-                    ;;
-                3)
-                    CHOICE="Chad"
-                    ADJUSTED_PRIORITY_FEE=$(printf "%.0f" $(echo "$PRIORITY_FEE + $PRIORITY_FEE * 0.50" | bc))
-                    ;;
-            esac
-
-            # Update config with the latest settings and wallet address
-            {
-                $ECHO "ADJUSTED_PRIORITY_FEE=${ADJUSTED_PRIORITY_FEE}"
-            } >> "$CONFIG_FILE"
-
-            # Confirm to start mining with the wallet address on a new line
-            $ECHO -e "Selected preset: \033[1;32m${CHOICE}\033[0m"
-            $ECHO -e "Adjusted Priority Fee: \033[1;32m${ADJUSTED_PRIORITY_FEE}\033[0m"
-        fi
-
         $ECHO -e "You are mining to the wallet address: \033[1;32m${WALLET_ADDRESS}\033[0m"
 
         # Print the final command used
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
             final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --threads \"$THREADS\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee-max \"$DYNAMIC_FEE_MAX\""
         else
-            final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$ADJUSTED_PRIORITY_FEE\" --threads \"$THREADS\" --buffer-time \"$BUFFER_TIME\""
+            final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --threads \"$THREADS\" --buffer-time \"$BUFFER_TIME\""
         fi
 
         $ECHO -e "Final command: \033[1;32m$final_command\033[0m"
@@ -354,7 +312,7 @@ case "$COMMAND" in
             $ECHO "Dynamic Fee URL: $DYNAMIC_FEE_URL"
             $ECHO "Maximum Dynamic Fee: $DYNAMIC_FEE_MAX"
         else
-            $ECHO "Priority Fee: $ADJUSTED_PRIORITY_FEE"
+            $ECHO "Priority Fee: $PRIORITY_FEE"
         fi
 
         # Run the mining operation
