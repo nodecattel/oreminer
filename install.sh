@@ -40,7 +40,7 @@ if [ "$OS_TYPE" == "Linux" ]; then
 
     # Install required build tools and libraries
     echo "Installing required build tools and libraries..."
-    sudo apt install -y build-essential libssl-dev pkg-config libudev-dev llvm libclang-dev protobuf-compiler
+    sudo apt install -y nano build-essential libssl-dev pkg-config libudev-dev llvm libclang-dev protobuf-compiler
 elif [ "$OS_TYPE" == "Mac" ]; then
     echo "Installing build tools for Mac..."
     xcode-select --install || echo "Xcode command line tools already installed."
