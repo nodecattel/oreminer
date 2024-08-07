@@ -33,10 +33,14 @@ if [ "$SHELL" = "fish" ]; then
 fi
 
 if [ "$OS_TYPE" == "Linux" ]; then
-    # Install build tools (Ubuntu/Debian specific)
-    echo "Installing build tools..."
+    # Update and upgrade the system
+    echo "Updating and upgrading the system..."
     sudo apt update
-    sudo apt install -y build-essential
+    sudo apt upgrade -y
+
+    # Install required build tools and libraries
+    echo "Installing required build tools and libraries..."
+    sudo apt install -y build-essential libssl-dev pkg-config libudev-dev llvm libclang-dev protobuf-compiler
 elif [ "$OS_TYPE" == "Mac" ]; then
     echo "Installing build tools for Mac..."
     xcode-select --install || echo "Xcode command line tools already installed."
@@ -123,11 +127,12 @@ if [[ "$env_choice" =~ [Mm] ]]; then
         cd ore
         git remote set-url origin https://github.com/regolith-labs/ore
         git fetch origin
+        git checkout master
     else
         git clone https://github.com/regolith-labs/ore.git
         cd ore
+        git checkout master
     fi
-    git checkout master
     cd $ORE_CLI_DIR
 fi
 
@@ -139,11 +144,12 @@ if [[ "$env_choice" =~ [Dd] ]]; then
         cd ore
         git remote set-url origin https://github.com/regolith-labs/ore
         git fetch origin
+        git checkout hardhat/devnet-prerelease
     else
         git clone https://github.com/regolith-labs/ore.git
         cd ore
+        git checkout hardhat/devnet-prerelease
     fi
-    git checkout hardhat/devnet-prerelease
     cd $ORE_CLI_DIR
     git checkout hardhat/devnet-prerelease
 fi
