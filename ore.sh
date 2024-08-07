@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Detect OS and source appropriate profile file
-OS="$(uname)"
-if [[ "$OS" == "Darwin" ]]; then
-    source ~/.profile
-else
-    source ~/.bashrc
-fi
-
 # Version Information and Credits
 echo -e "\033[0;32m"
 cat << "EOF"
