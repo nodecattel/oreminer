@@ -29,7 +29,7 @@ Before running the script, ensure you have the following installed:
 ### Give permission for script become executable
 
 ```bash
-chmod +x install.sh ore.sh
+chmod +x install.sh ore.sh upgrade.sh
 ```
 ### Installation 💻
 
@@ -43,19 +43,19 @@ Follow the on-screen instructions to complete the installation. The script will:
 
 - Install Rust and Cargo
 - Install the Solana CLI
+- Create New Wallet if not exist : !!! note down your SEED PHRASE !!!
 - Install and update the Ore CLI to the latest version
 - Set executable permissions for `ore.sh`
 - Optionally run `ore.sh` for further setup
 
 ### Running Ore Miner ⛏️
 
-(Devnet) Get SOL testnet by running this command:
+Fund your wallet with some sol
 
+Show solana address on your machine : locate at $HOME/.config/solana/id.json
 ```
-solana config set --url d
-solana airdrop 1
+solana address
 ```
-try again if there is an error with rate limit
 
 After installation, fund your wallet and you can start the mining process by running:
 
@@ -67,6 +67,11 @@ See all available commands
 
 ```
 ./ore.sh
+```
+
+Upgrade ORE-CLI version
+```
+./upgrade.sh
 ```
 
 ### Change default variable config manually
