@@ -1,97 +1,14 @@
 #!/bin/bash
-source ~/.profile
 
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 1.1.0 mainnet
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - Upgrade
 EOF
-echo -e "Version 0.2.3 - Ore Cli installer"
-echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
+echo -e "Upgrading ORE CLI\033[0m"
 
 # Exit script if any command fails
 set -e
-
-# Detect OS
-OS="$(uname -s)"
-case "${OS}" in
-    Linux*)     OS_TYPE=Linux;;
-    Darwin*)    OS_TYPE=Mac;;
-    *)          OS_TYPE="UNKNOWN:${OS}"
-esac
-
-echo "Detected OS: $OS_TYPE"
-
-# Install Rust and Cargo
-echo "Installing Rust and Cargo..."
-curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-# Ensure Cargo is in the PATH
-. "$HOME/.cargo/env"  # For sh/bash/zsh/ash/dash/pdksh
-if [ "$SHELL" = "fish" ]; then
-    source "$HOME/.cargo/env.fish"
-fi
-
-if [ "$OS_TYPE" == "Linux" ]; then
-    # Update and upgrade the system
-    echo "Updating and upgrading the system..."
-    sudo apt update
-    sudo apt upgrade -y
-
-    # Install required dependencies
-    echo "Installing required dependencies..."
-    sudo apt install -y openssl pkg-config libssl-dev
-elif [ "$OS_TYPE" == "Mac" ]; then
-    # Install Homebrew if not installed
-    if ! command -v brew &> /dev/null; then
-        echo "Homebrew not found. Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
-
-    echo "Installing required dependencies for Mac..."
-    brew install openssl pkg-config
-
-    # Set environment variables for OpenSSL if necessary
-    export PATH="/usr/local/opt/openssl/bin:$PATH"
-    export LDFLAGS="-L/usr/local/opt/openssl/lib"
-    export CPPFLAGS="-I/usr/local/opt/openssl/include"
-else
-    echo "Unsupported OS type: $OS_TYPE"
-    exit 1
-fi
-
-# Check if Solana CLI is installed
-if command -v solana &> /dev/null; then
-    echo "Solana CLI is already installed. Skipping installation."
-else
-    echo "Installing Solana CLI..."
-    sh -c "$(curl -sSfL https://release.solana.com/v1.18.20/install)"
-    # Ensure Solana is in the PATH
-    if [ "$OS_TYPE" == "Linux" ]; then
-        PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.profile
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.bashrc
-        source ~/.profile
-    elif [ "$OS_TYPE" == "Mac" ]; then
-        PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.profile
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin/$PATH"' >> ~/.zshrc
-        source ~/.profile
-    fi
-fi
-
-# Verify Solana CLI installation
-if ! command -v solana &> /dev/null; then
-    echo "Solana CLI installation failed or not found in PATH."
-    exit 1
-fi
-
-# Create Solana keypair
-if [ -f "$HOME/.config/solana/id.json" ]; then
-    echo "Existing wallet found. Skipping key generation."
-else
-    solana-keygen new
-fi
 
 # Prompt to select environment (mainnet or devnet)
 read -p "Choose Solana network (m for mainnet, d for devnet): " env_choice
@@ -188,11 +105,11 @@ else
 fi
 
 # Optionally prompt the user to run ore.sh for further setup
-read -p "Do you wish to continue with setting up ore.sh? [Y/n] " answer
+read -p "Do you wish to start mining? [Y/n] " answer
 if [[ "$answer" =~ ^[Yy]$ ]]; then
-    echo "Proceeding with ore.sh setup..."
+    echo "Starting mining with the latest ore-cli"
     cd $(dirname "$ORE_SH_PATH") # Change directory to where ore.sh is located
     ./ore.sh mine
 else
-    echo -e "Setup aborted. Run ore.sh manually to complete setup."
+    echo -e "Upgrade complete. You can start mining manually by running ./ore.sh mine."
 fi
