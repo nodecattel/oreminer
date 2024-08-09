@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Version 2.0.0 - Ore Miner V2"
+echo -e "compattable with ore-cli v2.1.0 - Ore Miner V2"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -27,7 +27,6 @@ BASE_PRIORITY_FEE="0"  # This is the base priority fee before any presets
 DEFAULT_CORES="1"
 DEFAULT_KEYPAIR_PATH="$HOME/.config/solana/id.json"
 DEFAULT_BUFFER_TIME="5"
-DEFAULT_DYNAMIC_FEE_STRATEGY="helius"
 
 # Ensure the ORE directory exists
 mkdir -p "$ORE_DIR"
@@ -174,7 +173,7 @@ run_mining() {
     while :; do
         $ECHO "Mining operation started. Press CTRL+C to stop."
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
-            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --cores "$CORES" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee-strategy "$DYNAMIC_FEE_STRATEGY" --buffer-time "$BUFFER_TIME"
+            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --cores "$CORES" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee --buffer-time "$BUFFER_TIME"
         else
             ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --cores "$CORES" --buffer-time "$BUFFER_TIME"
         fi
@@ -241,9 +240,6 @@ case "$COMMAND" in
             PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
         else
             DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
-            $ECHO "Enter dynamic fee strategy (helius/triton) (Current: ${DYNAMIC_FEE_STRATEGY:-$DEFAULT_DYNAMIC_FEE_STRATEGY}): "
-            read -r input_dynamic_fee_strategy
-            DYNAMIC_FEE_STRATEGY="${input_dynamic_fee_strategy:-${DYNAMIC_FEE_STRATEGY:-$DEFAULT_DYNAMIC_FEE_STRATEGY}}"
         fi
 
         $ECHO "Enter number of cores (Current: ${CORES:-$DEFAULT_CORES}): "
@@ -267,7 +263,6 @@ case "$COMMAND" in
             $ECHO "KEYPAIR_PATH=$KEYPAIR_PATH"
             $ECHO "BUFFER_TIME=$BUFFER_TIME"
             $ECHO "DYNAMIC_FEE_URL=$DYNAMIC_FEE_URL"
-            $ECHO "DYNAMIC_FEE_STRATEGY=$DYNAMIC_FEE_STRATEGY"
         } > "$CONFIG_FILE"
 
         # Generate Solana keypair if it does not exist
@@ -291,7 +286,7 @@ case "$COMMAND" in
 
         # Print the final command used
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
-            final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee-strategy \"$DYNAMIC_FEE_STRATEGY\" --buffer-time \"$BUFFER_TIME\""
+            final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\""
         else
             final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\""
         fi
@@ -310,7 +305,6 @@ case "$COMMAND" in
         $ECHO "Wallet Address: $WALLET_ADDRESS"
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
             $ECHO "Dynamic Fee URL: $DYNAMIC_FEE_URL"
-            $ECHO "Dynamic Fee Strategy: $DYNAMIC_FEE_STRATEGY"
         else
             $ECHO "Priority Fee: $PRIORITY_FEE"
         fi
