@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Compatible with ore-cli v2.1.0 - Ore Miner V2"
+echo -e "Compatible with ore-cli v2.2.0 - Ore Miner V2"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
