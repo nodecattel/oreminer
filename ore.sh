@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Compatible with ore-cli v2.2.0 - Ore Miner V2"
+echo -e "Compatible with ore-cli v2.2.1 - Ore Miner V2"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -168,16 +168,23 @@ upgrade_tokens() {
     ore upgrade --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
-# Function to run mining operation in background
+# Function to run mining operation
 run_mining() {
     while :; do
         $ECHO "Mining operation started. Press CTRL+C to stop."
+
+        # Use the script command to capture all terminal output
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
-            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --cores "$CORES" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee --buffer-time "$BUFFER_TIME"
+            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\"" -a ore_mine.log
         else
-            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --cores "$CORES" --buffer-time "$BUFFER_TIME"
+            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\"" -a ore_mine.log
         fi
-        if [[ $? -ne 0 ]]; then
+
+        # Check for specific error in the log
+        if grep -q "ERROR: Error processing Instruction 3: custom program error: 0x0" ore_mine.log; then
+            $ECHO "\033[0;31mError detected: custom program error: 0x0. Restarting mining...\033[0m"
+            $SLEEP 3
+        elif [[ $? -ne 0 ]]; then
             $ECHO "\033[0;32mMining process exited with error, restarting in 3 seconds...\033[0m"
             $SLEEP 3
         else
@@ -186,6 +193,7 @@ run_mining() {
         fi
     done
 }
+
 
 # Handle commands
 case "$COMMAND" in
@@ -252,7 +260,7 @@ case "$COMMAND" in
 
         $ECHO "Enter buffer time in seconds (Current: ${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}): "
         read -r input_buffer_time
-        BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
+                BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
 
         # Confirm and update the config file
         $ECHO "Updating configuration..."
@@ -316,3 +324,4 @@ case "$COMMAND" in
         show_help
         ;;
 esac
+
