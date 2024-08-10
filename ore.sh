@@ -172,19 +172,12 @@ upgrade_tokens() {
 run_mining() {
     while :; do
         $ECHO "Mining operation started. Press CTRL+C to stop."
-
-        # Use the script command to capture all terminal output
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
-            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\"" | tee >(grep -v "Mining..." >> ore_mine.log)
+            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --cores "$CORES" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee --buffer-time "$BUFFER_TIME"
         else
-            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\"" | tee >(grep -v "Mining..." >> ore_mine.log)
+            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --cores "$CORES" --buffer-time "$BUFFER_TIME"
         fi
-
-        # Check for specific error in the log
-        if grep -q "ERROR: Error processing Instruction 3: custom program error: 0x0" ore_mine.log; then
-            $ECHO "\033[0;31mError detected: custom program error: 0x0. Restarting mining...\033[0m"
-            $SLEEP 3
-        elif [[ $? -ne 0 ]]; then
+        if [[ $? -ne 0 ]]; then
             $ECHO "\033[0;32mMining process exited with error, restarting in 3 seconds...\033[0m"
             $SLEEP 3
         else
@@ -245,7 +238,7 @@ case "$COMMAND" in
             $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
             read -r input_fee
             PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
-                else
+        else
             DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
         fi
 
