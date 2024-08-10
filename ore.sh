@@ -14,7 +14,7 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ V2
 EOF
-echo -e "Compatible with ore-cli v2.2.1 - Ore Miner V2"
+echo -e "Compatible with ore-cli v2.2.0 - Ore Miner V2"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m\n"
 
 # Configuration directory and file
@@ -168,16 +168,16 @@ upgrade_tokens() {
     ore upgrade --rpc "$RPC" --keypair "$KEYPAIR_PATH"
 }
 
-# Function to run mining operation
+# Function to run mining operation in background
 run_mining() {
     while :; do
         $ECHO "Mining operation started. Press CTRL+C to stop."
 
         # Use the script command to capture all terminal output
         if [[ -n "$DYNAMIC_FEE_URL" ]]; then
-            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\"" -a ore_mine.log
+            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\"" | tee >(grep -v "Mining..." >> ore_mine.log)
         else
-            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\"" -a ore_mine.log
+            script -q -c "ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\"" | tee >(grep -v "Mining..." >> ore_mine.log)
         fi
 
         # Check for specific error in the log
@@ -193,7 +193,6 @@ run_mining() {
         fi
     done
 }
-
 
 # Handle commands
 case "$COMMAND" in
@@ -246,7 +245,7 @@ case "$COMMAND" in
             $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
             read -r input_fee
             PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
-        else
+                else
             DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
         fi
 
@@ -260,7 +259,7 @@ case "$COMMAND" in
 
         $ECHO "Enter buffer time in seconds (Current: ${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}): "
         read -r input_buffer_time
-                BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
+        BUFFER_TIME="${input_buffer_time:-${BUFFER_TIME:-$DEFAULT_BUFFER_TIME}}"
 
         # Confirm and update the config file
         $ECHO "Updating configuration..."
@@ -324,4 +323,3 @@ case "$COMMAND" in
         show_help
         ;;
 esac
-
