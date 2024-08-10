@@ -23,10 +23,11 @@ CONFIG_FILE="$ORE_DIR/ore.conf"
 
 # Default values
 DEFAULT_RPC="https://api.mainnet-beta.solana.com"
-BASE_PRIORITY_FEE="0"  # This is the base priority fee before any presets
+BASE_PRIORITY_FEE="0"
 DEFAULT_CORES="1"
 DEFAULT_KEYPAIR_PATH="$HOME/.config/solana/id.json"
 DEFAULT_BUFFER_TIME="5"
+DEFAULT_JITO_ENABLED="false"
 
 # Ensure the ORE directory exists
 mkdir -p "$ORE_DIR"
@@ -172,7 +173,9 @@ upgrade_tokens() {
 run_mining() {
     while :; do
         $ECHO "Mining operation started. Press CTRL+C to stop."
-        if [[ -n "$DYNAMIC_FEE_URL" ]]; then
+        if [[ "$JITO_ENABLED" == "true" ]]; then
+            ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --cores "$CORES" --buffer-time "$BUFFER_TIME" --jito
+        elif [[ -n "$DYNAMIC_FEE_URL" ]]; then
             ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --cores "$CORES" --dynamic-fee-url "$DYNAMIC_FEE_URL" --dynamic-fee --buffer-time "$BUFFER_TIME"
         else
             ore mine --rpc "$RPC" --keypair "$KEYPAIR_PATH" --priority-fee "$PRIORITY_FEE" --cores "$CORES" --buffer-time "$BUFFER_TIME"
@@ -231,15 +234,27 @@ case "$COMMAND" in
         read -r input_rpc
         RPC="${input_rpc:-${RPC:-$DEFAULT_RPC}}"
 
-        $ECHO "Enter dynamic fee URL (fill n or N if not using dynamic fees) (Current: ${DYNAMIC_FEE_URL:-None}): "
-        read -r input_dynamic_fee_url
-        if [[ "$input_dynamic_fee_url" =~ ^[Nn]$ ]]; then
-            DYNAMIC_FEE_URL=""
+        # Ask if the user wants to enable Jito
+        $ECHO "Do you want to enable jito tip for your hash submission? (Current: ${JITO_ENABLED:-$DEFAULT_JITO_ENABLED}) [y/N]: "
+        read -r input_jito
+        if [[ "$input_jito" =~ ^[Yy]$ ]]; then
+            JITO_ENABLED="true"
+            DYNAMIC_FEE_URL="" # Disable dynamic fee if Jito is enabled
             $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
             read -r input_fee
             PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
         else
-            DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
+            JITO_ENABLED="false"
+            $ECHO "Enter dynamic fee URL (fill n or N if not using dynamic fees) (Current: ${DYNAMIC_FEE_URL:-None}): "
+            read -r input_dynamic_fee_url
+            if [[ "$input_dynamic_fee_url" =~ ^[Nn]$ ]]; then
+                DYNAMIC_FEE_URL=""
+                $ECHO "Enter your base priority fee (Current: ${PRIORITY_FEE:-$BASE_PRIORITY_FEE}): "
+                read -r input_fee
+                PRIORITY_FEE="${input_fee:-${PRIORITY_FEE:-$BASE_PRIORITY_FEE}}"
+            else
+                DYNAMIC_FEE_URL="${input_dynamic_fee_url:-${DYNAMIC_FEE_URL}}"
+            fi
         fi
 
         $ECHO "Enter number of cores (Current: ${CORES:-$DEFAULT_CORES}): "
@@ -263,6 +278,7 @@ case "$COMMAND" in
             $ECHO "KEYPAIR_PATH=$KEYPAIR_PATH"
             $ECHO "BUFFER_TIME=$BUFFER_TIME"
             $ECHO "DYNAMIC_FEE_URL=$DYNAMIC_FEE_URL"
+            $ECHO "JITO_ENABLED=$JITO_ENABLED"
         } > "$CONFIG_FILE"
 
         # Generate Solana keypair if it does not exist
@@ -285,7 +301,9 @@ case "$COMMAND" in
         $ECHO -e "You are mining to the wallet address: \033[1;32m${WALLET_ADDRESS}\033[0m"
 
         # Print the final command used
-        if [[ -n "$DYNAMIC_FEE_URL" ]]; then
+        if [[ "$JITO_ENABLED" == "true" ]]; then
+            final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\" --jito"
+        elif [[ -n "$DYNAMIC_FEE_URL" ]]; then
             final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --cores \"$CORES\" --dynamic-fee-url \"$DYNAMIC_FEE_URL\" --dynamic-fee --buffer-time \"$BUFFER_TIME\""
         else
             final_command="ore mine --rpc \"$RPC\" --keypair \"$KEYPAIR_PATH\" --priority-fee \"$PRIORITY_FEE\" --cores \"$CORES\" --buffer-time \"$BUFFER_TIME\""
@@ -303,7 +321,9 @@ case "$COMMAND" in
         $ECHO "Cores: $CORES"
         $ECHO "Buffer Time: $BUFFER_TIME"
         $ECHO "Wallet Address: $WALLET_ADDRESS"
-        if [[ -n "$DYNAMIC_FEE_URL" ]]; then
+        if [[ "$JITO_ENABLED" == "true" ]]; then
+            $ECHO "Jito Enabled: Yes"
+        elif [[ -n "$DYNAMIC_FEE_URL" ]]; then
             $ECHO "Dynamic Fee URL: $DYNAMIC_FEE_URL"
         else
             $ECHO "Priority Fee: $PRIORITY_FEE"
