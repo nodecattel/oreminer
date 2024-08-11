@@ -39,13 +39,11 @@ def get_ore_binary_path():
 
 def get_ore_rewards(ore_path):
     try:
-        # Execute the `ore rewards` command and capture the output
         result = subprocess.run([ore_path, 'rewards'], capture_output=True, text=True)
         output = result.stdout.strip()
         print("ORE rewards output:", output)  # Debug print
         rewards = {}
         
-        # Parse the output into a dictionary
         for line in output.split('\n'):
             parts = line.split(': ')
             if len(parts) == 2:
@@ -58,8 +56,8 @@ def get_ore_rewards(ore_path):
         print(f"Failed to execute `ore rewards`: {e}")
         return {}
 
-def display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, sol_price):
-    ore_mining_fee_lamports = 50000
+def display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, sol_price, electric_cost_per_hour):
+    ore_mining_fee_lamports = 5000
     rewards_usd_per_hour = {difficulty: round(reward * ore_price * 60, 8) for difficulty, reward in rewards.items()}
     table = []
 
@@ -67,7 +65,7 @@ def display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, 
         reward_usd_per_hour = rewards_usd_per_hour[difficulty]
         total_fee_lamports_per_hour = (priority_fees_lamports + ore_mining_fee_lamports) * 60
         total_fee_sol_per_hour = total_fee_lamports_per_hour / 1e9
-        total_fee_usd_per_hour = total_fee_sol_per_hour * sol_price
+        total_fee_usd_per_hour = total_fee_sol_per_hour * sol_price + electric_cost_per_hour
         profit_usd_per_hour = reward_usd_per_hour - total_fee_usd_per_hour
         profitable = "Yes" if profit_usd_per_hour > 0 else "No"
         table.append([difficulty, reward, reward_usd_per_hour, total_fee_usd_per_hour, profit_usd_per_hour, profitable])
@@ -75,50 +73,24 @@ def display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, 
     print(tabulate(table, headers=["Difficulty", "ORE Reward (per min)", "USD Reward (per hour)", "Total Fee (USD/hour)", "Profit (USD/hour)", "Profitable"], tablefmt="pretty"))
     return rewards_usd_per_hour
 
-def calculate_profitability(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price):
-    ore_mining_fee_lamports = 50000
+def calculate_profitability(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price, electric_cost_per_hour):
+    ore_mining_fee_lamports = 5000
     total_fee_lamports = priority_fees_lamports + ore_mining_fee_lamports
     total_fee_sol = total_fee_lamports / 1e9
-    total_fee_usd = total_fee_sol * sol_price
+    total_fee_usd = total_fee_sol * sol_price + electric_cost_per_hour
     
     reward_ore = rewards.get(average_difficulty, 0)
     reward_usd = round(reward_ore * ore_price * 60, 8)
     
-    profit_usd = reward_usd - total_fee_usd * 60
-    profit_usd_per_hour = profit_usd
+    profit_usd_per_hour = reward_usd - total_fee_usd
     total_fee_sol_per_hour = total_fee_sol * 60
     
-    return total_fee_usd, reward_usd, profit_usd, profit_usd_per_hour, total_fee_sol_per_hour, reward_ore
-
-def suggest_adjusted_priority_fee(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price):
-    ore_mining_fee_lamports = 50000
-    reward_ore = rewards.get(average_difficulty, 0)
-    reward_usd_per_hour = round(reward_ore * ore_price * 60, 8)
-    total_fee_usd_per_hour = reward_usd_per_hour
-    
-    total_fee_sol_per_hour = total_fee_usd_per_hour / sol_price
-    total_fee_lamports_per_hour = total_fee_sol_per_hour * 1e9
-    adjusted_priority_fee_lamports = total_fee_lamports_per_hour / 60 - ore_mining_fee_lamports
-    
-    if adjusted_priority_fee_lamports < 0:
-        adjusted_priority_fee_lamports = 0
-    
-    return adjusted_priority_fee_lamports
-
-def suggest_ore_price_for_breakeven(priority_fees_lamports, average_difficulty, rewards, sol_price):
-    ore_mining_fee_lamports = 50000
-    total_fee_lamports = (priority_fees_lamports + ore_mining_fee_lamports) * 60
-    total_fee_sol = total_fee_lamports / 1e9
-    total_fee_usd = total_fee_sol * sol_price
-    reward_ore = rewards.get(average_difficulty, 0)
-    ore_price_to_breakeven = total_fee_usd / (reward_ore * 60) if reward_ore > 0 else float('inf')
-    
-    return ore_price_to_breakeven
+    return total_fee_usd, reward_usd, profit_usd_per_hour, total_fee_sol_per_hour, reward_ore
 
 def main():
     sol_price = get_token_price(sol_address)
     ore_price = get_token_price(ore_address)
-    print(f"SOL Price: {sol_price}, ORE Price: {ore_price}")  # Debug print
+    print(f"SOL Price: {sol_price}, ORE Price: {ore_price}")
     if sol_price is None or ore_price is None:
         return
     
@@ -134,25 +106,32 @@ def main():
     priority_fees_lamports = int(input())
     print(Fore.GREEN + "Enter the average landing difficulty: ", end="")
     average_difficulty = int(input())
+    print(Fore.GREEN + "Enter your electric/rental fees per hour in USD: ", end="")
+    electric_cost_per_hour = float(input())
 
-    rewards_usd_per_hour = display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, sol_price)
+    rewards_usd_per_hour = display_rewards_in_usd_per_hour(rewards, ore_price, priority_fees_lamports, sol_price, electric_cost_per_hour)
     
-    total_fee_usd, reward_usd, profit_usd, profit_usd_per_hour, total_fee_sol_per_hour, reward_ore = calculate_profitability(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price)
+    total_fee_usd, reward_usd, profit_usd_per_hour, total_fee_sol_per_hour, reward_ore = calculate_profitability(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price, electric_cost_per_hour)
     
-    print(f"Total Mining Fee per hour: {total_fee_sol_per_hour:.8f} SOL | ${total_fee_usd * 60:.8f}")
-    print(f"ORE Reward per hour: {reward_ore * 60:.8f} ORE | ${reward_usd:.8f}")
+    # Detailed breakdown
+    print(Fore.CYAN + "\nCost Breakdown:")
+    print(f"{Fore.YELLOW}SOL Price: {Fore.RESET}${sol_price:.2f}")
+    print(f"{Fore.YELLOW}ORE Price: {Fore.RESET}${ore_price:.2f}")
+    print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_lamports / 1e6:.6f} SOL")
+    print(f"{Fore.YELLOW}ORE Mining Fee: {Fore.RESET}0.000300 SOL")
+    print(f"{Fore.YELLOW}Electric/Rental Fees: {Fore.RESET}${electric_cost_per_hour:.2f} per hour")
+    
+    print(Fore.CYAN + "\nSummary:")
+    print(f"Total Mining Fee per hour: {Fore.RED}{total_fee_sol_per_hour:.6f} SOL {Fore.RESET}| {Fore.RED}${total_fee_usd:.6f}")
+    print(f"ORE Reward per hour: {Fore.GREEN}{reward_ore * 60:.8f} ORE {Fore.RESET}| {Fore.GREEN}${reward_usd:.6f}")
     
     daily_profit_usd = profit_usd_per_hour * 24
-    print(f"Daily Profit (USD): ${daily_profit_usd:.8f}")
+    print(f"Daily Profit (USD): {Fore.GREEN if daily_profit_usd >= 0 else Fore.RED}${daily_profit_usd:.6f}")
 
     if profit_usd_per_hour >= 0:
-        print(Fore.GREEN + f"Profit (USD/hour): ${profit_usd_per_hour:.8f}")
+        print(Fore.GREEN + f"Profit (USD/hour): ${profit_usd_per_hour:.6f}")
     else:
-        print(Fore.RED + f"Profit (USD/hour): ${profit_usd_per_hour:.8f}")
-        suggested_priority_fee = suggest_adjusted_priority_fee(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price)
-        print(Fore.RED + f"Suggested Priority Fee to be Profitable (lamports): {suggested_priority_fee:.0f}")
-        ore_price_to_breakeven = suggest_ore_price_for_breakeven(priority_fees_lamports, average_difficulty, rewards, sol_price)
-        print(Fore.RED + f"ORE Price needed to Breakeven: ${ore_price_to_breakeven:.8f}")
+        print(Fore.RED + f"Profit (USD/hour): ${profit_usd_per_hour:.6f}")
 
 if __name__ == "__main__":
     main()
