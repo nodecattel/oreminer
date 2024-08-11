@@ -4,9 +4,9 @@ source ~/.profile
 echo -e "\033[0;32m"
 cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
-█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 1.1.0 mainnet
+█▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 2.1.1 mainnet
 EOF
-echo -e "Version 0.2.3 - Ore Cli installer"
+echo -e "Version 0.2.4 - Ore Cli installer"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
@@ -93,17 +93,26 @@ else
     solana-keygen new
 fi
 
-# Prompt to select environment (mainnet or jito)
-read -p "Choose Solana network (m for mainnet, j for jito): " env_choice
+# Prompt to select environment (mainnet, jito, or panda-optimized-cores)
+echo -e "\033[0;32m"
+read -p "Choose Solana network (m for mainnet, j for jito dynamic tip, p for panda-opti-cores): " env_choice
+echo -e "\033[0m"  # Reset color
 case "$env_choice" in
     [Mm]*)
         echo "Switching to 'mainnet'..."
         solana config set --url https://api.mainnet-beta.solana.com
         REPO_URL="https://github.com/regolith-labs/ore-cli"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli"
         ;;
     [Jj]*)
-        echo "Switching to 'jito'..."
+        echo "Switching to 'jito dynamic tip'..."
         REPO_URL="https://github.com/nodecattel/ore-cli-jito.git"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli-jito"
+        ;;
+    [Pp]*)
+        echo "Switching to 'panda-opti-cores'..."
+        REPO_URL="https://github.com/JustPandaEver/ore-cli.git"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli-panda"
         ;;
     *)
         echo "Invalid choice. Staying on current environment."
@@ -115,8 +124,6 @@ esac
 DEFAULT_BRANCH=$(git ls-remote --symref "$REPO_URL" HEAD | awk '/^ref:/ {print $2}' | sed 's/refs\/heads\///')
 
 # Clone or update ORE-CLI from source
-OREMINER_DIR="$HOME/oreminer"
-ORE_CLI_DIR="$OREMINER_DIR/ore-cli"
 if [ -d "$ORE_CLI_DIR" ]; then
     echo "Updating ORE-CLI repository..."
     cd $ORE_CLI_DIR
@@ -126,7 +133,7 @@ if [ -d "$ORE_CLI_DIR" ]; then
     git pull origin $DEFAULT_BRANCH
 else
     echo "Cloning ORE-CLI repository..."
-    mkdir -p $OREMINER_DIR
+    mkdir -p $(dirname $ORE_CLI_DIR)
     git clone --branch $DEFAULT_BRANCH "$REPO_URL" $ORE_CLI_DIR
     cd $ORE_CLI_DIR
 fi
@@ -134,8 +141,8 @@ fi
 # Additional steps for mainnet
 if [[ "$env_choice" =~ [Mm] ]]; then
     echo "Setting up additional repository for mainnet..."
-    cd $OREMINER_DIR
-    if [ -d "$OREMINER_DIR/ore" ]; then
+    cd $HOME/oreminer
+    if [ -d "$HOME/oreminer/ore" ]; then
         cd ore
         git remote set-url origin https://github.com/regolith-labs/ore
         git fetch origin
@@ -162,7 +169,7 @@ ore --version
 echo -e "\033[0;35m by NodeCattel\033[0m"
 
 # Give execution permission to ore.sh
-ORE_SH_PATH="$OREMINER_DIR/ore.sh" # Update with the actual path
+ORE_SH_PATH="$HOME/oreminer/ore.sh" # Update with the actual path
 if [ -f "$ORE_SH_PATH" ]; then
     chmod +x "$ORE_SH_PATH"
     echo "Executable permissions set for ore.sh."

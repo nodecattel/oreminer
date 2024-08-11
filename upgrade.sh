@@ -10,16 +10,28 @@ echo -e "Upgrading ORE CLI\033[0m"
 # Exit script if any command fails
 set -e
 
-# Prompt to select environment (mainnet or devnet)
-read -p "Choose Solana network (m for mainnet, d for devnet): " env_choice
+# Prompt to select environment (mainnet, jito, or panda-optimized-cores)
+echo -e "\033[0;32m"
+read -p "Choose Solana network (m for mainnet, j for jito dynamic tip, p for panda-opti-cores): " env_choice
+echo -e "\033[0m"  # Reset color
 case "$env_choice" in
     [Mm]*)
         echo "Switching to 'mainnet'..."
         solana config set --url https://api.mainnet-beta.solana.com
+        REPO_URL="https://github.com/regolith-labs/ore-cli"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli"
         ;;
-    [Dd]*)
-        echo "Switching to 'devnet'..."
-        solana config set --url https://api.devnet.solana.com
+    [Jj]*)
+        echo "Switching to 'jito dynamic tip'..."
+        solana config set --url https://api.mainnet-beta.solana.com
+        REPO_URL="https://github.com/nodecattel/ore-cli-jito.git"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli-jito"
+        ;;
+    [Pp]*)
+        echo "Switching to 'panda-opti-cores'..."
+        solana config set --url https://api.mainnet-beta.solana.com
+        REPO_URL="https://github.com/JustPandaEver/ore-cli.git"
+        ORE_CLI_DIR="$HOME/oreminer/ore-cli-panda"
         ;;
     *)
         echo "Invalid choice. Staying on current environment."
@@ -28,30 +40,28 @@ case "$env_choice" in
 esac
 
 # Determine the default branch name
-DEFAULT_BRANCH=$(git ls-remote --symref https://github.com/regolith-labs/ore-cli HEAD | awk '/^ref:/ {print $2}' | sed 's/refs\/heads\///')
+DEFAULT_BRANCH=$(git ls-remote --symref "$REPO_URL" HEAD | awk '/^ref:/ {print $2}' | sed 's/refs\/heads\///')
 
 # Clone or update ORE-CLI from source
-OREMINER_DIR="$HOME/oreminer"
-ORE_CLI_DIR="$OREMINER_DIR/ore-cli"
 if [ -d "$ORE_CLI_DIR" ]; then
     echo "Updating ORE-CLI repository..."
     cd $ORE_CLI_DIR
-    git remote set-url origin https://github.com/regolith-labs/ore-cli
+    git remote set-url origin "$REPO_URL"
     git fetch origin
     git checkout $DEFAULT_BRANCH
     git pull origin $DEFAULT_BRANCH
 else
     echo "Cloning ORE-CLI repository..."
-    mkdir -p $OREMINER_DIR
-    git clone --branch $DEFAULT_BRANCH https://github.com/regolith-labs/ore-cli $ORE_CLI_DIR
+    mkdir -p $(dirname $ORE_CLI_DIR)
+    git clone --branch $DEFAULT_BRANCH "$REPO_URL" $ORE_CLI_DIR
     cd $ORE_CLI_DIR
 fi
 
 # Additional steps for mainnet
 if [[ "$env_choice" =~ [Mm] ]]; then
     echo "Setting up additional repository for mainnet..."
-    cd $OREMINER_DIR
-    if [ -d "$OREMINER_DIR/ore" ]; then
+    cd $HOME/oreminer
+    if [ -d "$HOME/oreminer/ore" ]; then
         cd ore
         git remote set-url origin https://github.com/regolith-labs/ore
         git fetch origin
@@ -62,24 +72,6 @@ if [[ "$env_choice" =~ [Mm] ]]; then
         git checkout master
     fi
     cd $ORE_CLI_DIR
-fi
-
-# Additional steps for devnet
-if [[ "$env_choice" =~ [Dd] ]]; then
-    echo "Setting up additional repository for devnet..."
-    cd $OREMINER_DIR
-    if [ -d "$OREMINER_DIR/ore" ]; then
-        cd ore
-        git remote set-url origin https://github.com/regolith-labs/ore
-        git fetch origin
-        git checkout hardhat/devnet-prerelease
-    else
-        git clone https://github.com/regolith-labs/ore.git
-        cd ore
-        git checkout hardhat/devnet-prerelease
-    fi
-    cd $ORE_CLI_DIR
-    git checkout hardhat/devnet-prerelease
 fi
 
 # Build the ORE-CLI binary
@@ -96,7 +88,7 @@ ore --version
 echo -e "\033[0;35m by NodeCattel\033[0m"
 
 # Give execution permission to ore.sh
-ORE_SH_PATH="$OREMINER_DIR/ore.sh" # Update with the actual path
+ORE_SH_PATH="$HOME/oreminer/ore.sh" # Update with the actual path
 if [ -f "$ORE_SH_PATH" ]; then
     chmod +x "$ORE_SH_PATH"
     echo "Executable permissions set for ore.sh."
