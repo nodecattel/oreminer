@@ -10,6 +10,8 @@ $ORE (V2) token address `oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp`
 
 $ORE (V1) token address `oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz` - mining paused, migrate to v2 if you have
 
+![ORE Miner Interface Sample](https://github.com/nodecattel/oreminer/blob/be50d8bd10929a299eede21ef7f106e9eeeade4f/oreminer-interface-sample.png)
+
 ## Quick Start 🛠️
 
 To get started with the Ore Miner Auto Script, clone this repository to your local machine using the following command:
@@ -38,6 +40,7 @@ Navigate to the cloned repository directory and run the `install.sh` script to s
 ```bash
 ./install.sh
 ```
+We have added few options for installation which has mainnet (official ore-cli), jito dynamic tip (dannpl fork) and panda optimized cores (JustPandaEver fork)
 
 Follow the on-screen instructions to complete the installation. The script will:
 
