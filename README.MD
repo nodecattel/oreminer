@@ -42,7 +42,7 @@ Navigate to the cloned repository directory and run the `install.sh` script to s
 ```bash
 ./install.sh
 ```
-We have added few options for installation which has mainnet (official ore-cli), jito dynamic tip (dannpl fork) and panda optimized cores (JustPandaEver fork)
+We have added few options for installation which has `mainnet (official ore-cli)`, `jito dynamic tip (dannpl fork)` and `panda optimized cores (JustPandaEver fork)`
 
 Follow the on-screen instructions to complete the installation. The script will:
 
