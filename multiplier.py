@@ -51,13 +51,14 @@ def main():
     stake, top_stake = get_stake_and_top_stake()
     if stake is not None and top_stake is not None:
         multiplier = calculate_multiplier(stake, top_stake)
+        print(f"Stake: {stake:.12f} ORE")
         print(f"Your Current Multiplier: {multiplier:.8f}")
         
         print("\nMultiplier Preview for Different Stakes:")
         preview_results = preview_multipliers(stake, top_stake)
         
         for increment, multiplier in preview_results:
-            print(f"Stake: {stake + increment:.8f} ORE | Multiplier: {multiplier:.8f}")
+            print(f"Stake: {stake + increment:.12f} ORE | Multiplier: {multiplier:.8f}")
     else:
         print("Error: Could not calculate multiplier due to missing stake or top stake.")
 

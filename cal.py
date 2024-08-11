@@ -101,6 +101,7 @@ def display_multiplier_preview(stake, top_stake, difficulty_levels, probabilitie
     
     current_multiplier = multiplier.calculate_multiplier(stake, top_stake)
     print(Fore.CYAN + "\nMultiplier Preview:")
+    print(f"Your Current Stake: {Fore.GREEN}{stake:.8f} ORE{Fore.RESET}")
     print(f"Your Current Multiplier: {Fore.GREEN}{current_multiplier:.8f}{Fore.RESET}")
     
     # Prepare data for tabulation
@@ -175,8 +176,8 @@ def main():
     print(Fore.CYAN + "\nCost Breakdown:")
     print(f"{Fore.YELLOW}SOL Price: {Fore.RESET}${sol_price:.2f}")
     print(f"{Fore.YELLOW}ORE Price: {Fore.RESET}${ore_price:.2f}")
-    print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_lamports / 1e6:.6f} SOL")
-    print(f"{Fore.YELLOW}ORE Mining Fee: {Fore.RESET}0.000300 SOL")
+    print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_lamports / 1e8:.8f} SOL per transaction")
+    print(f"{Fore.YELLOW}ORE Mining Fee: {Fore.RESET}0.000005 SOL per transaction")
     print(f"{Fore.YELLOW}Electricity/Rental Fees: {Fore.RESET}${electric_cost_per_hour:.2f} per hour")
     
     print(Fore.CYAN + "\nSummary:")
