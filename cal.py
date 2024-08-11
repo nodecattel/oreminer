@@ -113,9 +113,8 @@ def display_multiplier_preview(stake, top_stake, difficulty_hits, rewards, ore_p
         # Calculate the cost of buying additional ORE
         cost_of_additional_ore = increment * ore_price
         
-        # Calculate the total ORE mined for the day using the existing difficulty hits
-        total_ore_mined = sum(hits * rewards.get(difficulty, 0) * new_multiplier for difficulty, hits in difficulty_hits.items())
-        expected_usd_day = total_ore_mined * ore_price
+        # Calculate expected ORE per day using the same difficulty distribution and hits
+        expected_ore_per_day = sum(hits * rewards.get(difficulty, 0) * new_multiplier for difficulty, hits in difficulty_hits.items())
         
         # Append the results to the preview_data list
         preview_data.append([
@@ -123,8 +122,8 @@ def display_multiplier_preview(stake, top_stake, difficulty_hits, rewards, ore_p
             f"{new_multiplier:.8f}", 
             f"{percentage_increase:.2f}%", 
             f"${cost_of_additional_ore:.2f}", 
-            f"{total_ore_mined:.8f} ORE",
-            f"${expected_usd_day:.6f}"
+            f"{expected_ore_per_day:.8f} ORE",
+            f"${expected_ore_per_day * ore_price:.6f}"
         ])
     
     # Display the results in a table
@@ -147,6 +146,9 @@ def main():
     print(Fore.GREEN + "Enter your electricity/rental fees per hour in USD: ", end="")
     electric_cost_per_hour = float(input())
 
+    # Convert microlamports to SOL correctly
+    priority_fees_sol = priority_fees_lamports / 1e8  # Correct conversion for microlamports to SOL
+
     # Get real ORE rewards for each difficulty level from the `ore rewards` command
     rewards = get_ore_rewards()
 
@@ -162,6 +164,12 @@ def main():
         difficulty_levels, probabilities, rewards, ore_price, sol_price, 
         priority_fees_lamports, electric_cost_per_hour, multiplier_value)
 
+    # Remark about the Monte Carlo Simulation
+    print(Fore.YELLOW + "\n[Note]")
+    print(Fore.YELLOW + "This simulation uses a Monte Carlo method to model the mining process over a 24-hour period.")
+    print(Fore.YELLOW + "Each run of this script may yield different results based on the random nature of the simulation.")
+    print(Fore.YELLOW + "This helps to account for the inherent variability in mining outcomes.")
+
     # Display the tiered summary with the current multiplier applied
     print(Fore.CYAN + "\nDifficulties Solved During 1440 Passes:")
     display_tiered_summary(difficulty_hits, rewards, 1440, multiplier_value)
@@ -173,7 +181,7 @@ def main():
     print(Fore.CYAN + "\nCost Breakdown:")
     print(f"{Fore.YELLOW}SOL Price: {Fore.RESET}${sol_price:.2f}")
     print(f"{Fore.YELLOW}ORE Price: {Fore.RESET}${ore_price:.2f}")
-    print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_lamports / 1e8:.8f} SOL per transaction")
+    print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_sol:.8f} SOL per transaction")
     print(f"{Fore.YELLOW}ORE Mining Fee: {Fore.RESET}0.000005 SOL per transaction")
     print(f"{Fore.YELLOW}Electricity/Rental Fees: {Fore.RESET}${electric_cost_per_hour:.2f} per hour")
     
@@ -185,3 +193,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    # Reminder message printed in red color
+    print(Fore.RED + "\nReminder: The results can vary slightly each time due to the Monte Carlo simulation.")
+    print(Fore.RED + "The simulation randomly models 1,440 passes (1 per minute) over a 24-hour period, so the outcomes might differ with each execution.")
+
