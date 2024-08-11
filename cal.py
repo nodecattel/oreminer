@@ -147,7 +147,8 @@ def main():
     electric_cost_per_hour = float(input())
 
     # Convert microlamports to SOL correctly
-    priority_fees_sol = priority_fees_lamports / 1e8  # Correct conversion for microlamports to SOL
+    priority_fees_sol = priority_fees_lamports / 1e9  # Correct conversion for microlamports to SOL
+    # 1 lamport = 1e-9 SOL
 
     # Get real ORE rewards for each difficulty level from the `ore rewards` command
     rewards = get_ore_rewards()
