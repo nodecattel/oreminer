@@ -48,8 +48,38 @@ if [ -d "$ORE_CLI_DIR" ]; then
     cd $ORE_CLI_DIR
     git remote set-url origin "$REPO_URL"
     git fetch origin
-    git checkout $DEFAULT_BRANCH
-    git pull origin $DEFAULT_BRANCH
+    
+    # Handle divergent branches
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse @{u})
+    BASE=$(git merge-base @ @{u})
+    
+    if [ $LOCAL = $REMOTE ]; then
+        echo "Already up to date."
+    elif [ $LOCAL = $BASE ]; then
+        echo "Local branch is behind, pulling changes..."
+        git pull origin $DEFAULT_BRANCH
+    elif [ $REMOTE = $BASE ]; then
+        echo "Your local changes aren't in the remote repository."
+        echo "Do you want to discard your local changes and sync with the latest code? [y/N]"
+        read reset_choice
+        if [[ "$reset_choice" =~ ^[Yy]$ ]]; then
+            git reset --hard origin/$DEFAULT_BRANCH
+        else
+            echo "Keeping your local changes. Exiting."
+            exit 1
+        fi
+    else
+        echo "Local and remote branches have different changes."
+        echo "Do you want to reset your changes to match the remote branch? [y/N]"
+        read divergence_choice
+        if [[ "$divergence_choice" =~ ^[Yy]$ ]]; then
+            git reset --hard origin/$DEFAULT_BRANCH
+        else
+            echo "Keeping your local changes. Exiting."
+            exit 1
+        fi
+    fi
 else
     echo "Cloning ORE-CLI repository..."
     mkdir -p $(dirname $ORE_CLI_DIR)
