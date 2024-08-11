@@ -96,7 +96,7 @@ def display_tiered_summary(difficulty_hits, rewards, total_passes, multiplier):
     summary_table = tabulate(summary_data, headers=["Difficulty", "ORE Reward Rate", "Solves", "Percentage", "Cumulative"], tablefmt="pretty")
     print(summary_table)
 
-def display_multiplier_preview(stake, top_stake, difficulty_levels, probabilities, rewards, ore_price):
+def display_multiplier_preview(stake, top_stake, difficulty_hits, rewards, ore_price):
     preview_results = multiplier.preview_multipliers(stake, top_stake)
     
     current_multiplier = multiplier.calculate_multiplier(stake, top_stake)
@@ -113,9 +113,9 @@ def display_multiplier_preview(stake, top_stake, difficulty_levels, probabilitie
         # Calculate the cost of buying additional ORE
         cost_of_additional_ore = increment * ore_price
         
-        # Calculate the expected ORE per minute with the new multiplier
-        expected_ore_per_minute = calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards, new_multiplier)
-        expected_ore_per_day = expected_ore_per_minute * 1440  # 1440 minutes in a day
+        # Calculate the total ORE mined for the day using the existing difficulty hits
+        total_ore_mined = sum(hits * rewards.get(difficulty, 0) * new_multiplier for difficulty, hits in difficulty_hits.items())
+        expected_usd_day = total_ore_mined * ore_price
         
         # Append the results to the preview_data list
         preview_data.append([
@@ -123,8 +123,8 @@ def display_multiplier_preview(stake, top_stake, difficulty_levels, probabilitie
             f"{new_multiplier:.8f}", 
             f"{percentage_increase:.2f}%", 
             f"${cost_of_additional_ore:.2f}", 
-            f"{expected_ore_per_day:.8f} ORE",
-            f"${expected_ore_per_day * ore_price:.6f}"
+            f"{total_ore_mined:.8f} ORE",
+            f"${expected_usd_day:.6f}"
         ])
     
     # Display the results in a table
@@ -157,20 +157,17 @@ def main():
     multiplier_value = multiplier.calculate_multiplier(stake, top_stake)
     print(f"Multiplier Applied: {multiplier_value:.8f}")
 
-    # Calculate expected ORE per minute with the multiplier applied
-    expected_ore_per_minute = calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards, multiplier_value)
-    expected_ore_per_day = expected_ore_per_minute * 1440  # 1440 minutes in a day
-
+    # Simulate one day of mining using the current multiplier
     total_ore_mined, total_profit_usd, difficulty_hits = simulate_one_day(
         difficulty_levels, probabilities, rewards, ore_price, sol_price, 
         priority_fees_lamports, electric_cost_per_hour, multiplier_value)
 
-    # Display the tiered summary with the multiplier applied
+    # Display the tiered summary with the current multiplier applied
     print(Fore.CYAN + "\nDifficulties Solved During 1440 Passes:")
     display_tiered_summary(difficulty_hits, rewards, 1440, multiplier_value)
 
-    # Show multiplier preview for different stake increments
-    display_multiplier_preview(stake, top_stake, difficulty_levels, probabilities, rewards, ore_price)
+    # Show multiplier preview for different stake increments using the existing difficulty hits
+    display_multiplier_preview(stake, top_stake, difficulty_hits, rewards, ore_price)
     
     # Detailed breakdown
     print(Fore.CYAN + "\nCost Breakdown:")
@@ -182,7 +179,7 @@ def main():
     
     print(Fore.CYAN + "\nSummary:")
     print(f"Total ORE Mined for the Day: {Fore.GREEN}{total_ore_mined:.8f} ORE {Fore.RESET}| {Fore.GREEN}${total_ore_mined * ore_price:.6f}")
-    print(f"Expected ORE Mined for the Day (from probabilities): {Fore.GREEN}{expected_ore_per_day:.8f} ORE")
+    print(f"Expected ORE Mined for the Day (from probabilities): {Fore.GREEN}{total_ore_mined:.8f} ORE")
     print(f"Total Profit (USD) for the Day: {Fore.GREEN if total_profit_usd >= 0 else Fore.RED}${total_profit_usd:.6f}")
     print(f"Average Profit (USD/hour): {Fore.GREEN if total_profit_usd >= 0 else Fore.RED}${total_profit_usd / 24:.6f}")
 
