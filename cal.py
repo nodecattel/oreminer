@@ -5,6 +5,7 @@ import numpy as np
 from colorama import Fore, Style, init
 from tabulate import tabulate
 import plot  # Import the updated plot.py
+import multiplier  # Import the multiplier.py
 import random
 import subprocess
 
@@ -48,7 +49,7 @@ def get_ore_rewards():
         print(f"Failed to execute `ore rewards`: {e}")
         return {}
 
-def simulate_one_day(difficulty_levels, probabilities, rewards, ore_price, sol_price, priority_fees_lamports, electric_cost_per_hour):
+def simulate_one_day(difficulty_levels, probabilities, rewards, ore_price, sol_price, priority_fees_lamports, electric_cost_per_hour, multiplier):
     ore_mining_fee_lamports = 5000
     total_ore_mined = 0
     total_profit_usd = 0
@@ -58,7 +59,7 @@ def simulate_one_day(difficulty_levels, probabilities, rewards, ore_price, sol_p
     
     for minute in range(1440):  # 1440 minutes in a day
         difficulty = random.choices(difficulty_levels, weights=probabilities)[0]
-        reward = rewards.get(difficulty, 0)
+        reward = rewards.get(difficulty, 0) * multiplier  # Apply the multiplier to the reward
         
         ore_mined = reward
         reward_usd = reward * ore_price
@@ -76,11 +77,11 @@ def simulate_one_day(difficulty_levels, probabilities, rewards, ore_price, sol_p
     
     return total_ore_mined, total_profit_usd, difficulty_hits
 
-def calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards):
-    expected_ore_per_minute = sum(p * rewards[d] for p, d in zip(probabilities, difficulty_levels))
+def calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards, multiplier):
+    expected_ore_per_minute = sum(p * rewards[d] * multiplier for p, d in zip(probabilities, difficulty_levels))
     return expected_ore_per_minute
 
-def display_tiered_summary(difficulty_hits, rewards, total_passes):
+def display_tiered_summary(difficulty_hits, rewards, total_passes, multiplier):
     # Prepare data for the tiered summary
     summary_data = []
     cumulative_percentage = 0
@@ -88,12 +89,47 @@ def display_tiered_summary(difficulty_hits, rewards, total_passes):
     for difficulty, hits in sorted(difficulty_hits.items()):
         percentage = (hits / total_passes) * 100
         cumulative_percentage += percentage
-        reward_rate = rewards.get(difficulty, 0)
+        reward_rate = rewards.get(difficulty, 0) * multiplier
         summary_data.append([difficulty, f"{reward_rate:.8f} ORE/pass", hits, f"{percentage:.1f}%", f"{cumulative_percentage:.1f}%"])
     
     # Display the summary in a table
     summary_table = tabulate(summary_data, headers=["Difficulty", "ORE Reward Rate", "Solves", "Percentage", "Cumulative"], tablefmt="pretty")
     print(summary_table)
+
+def display_multiplier_preview(stake, top_stake, difficulty_levels, probabilities, rewards, ore_price):
+    preview_results = multiplier.preview_multipliers(stake, top_stake)
+    
+    current_multiplier = multiplier.calculate_multiplier(stake, top_stake)
+    print(Fore.CYAN + "\nMultiplier Preview:")
+    print(f"Your Current Multiplier: {Fore.GREEN}{current_multiplier:.8f}{Fore.RESET}")
+    
+    # Prepare data for tabulation
+    preview_data = []
+
+    for increment, new_multiplier in preview_results:
+        # Calculate the percentage increase in the multiplier
+        percentage_increase = ((new_multiplier - current_multiplier) / current_multiplier) * 100
+        # Calculate the cost of buying additional ORE
+        cost_of_additional_ore = increment * ore_price
+        
+        # Calculate the expected ORE per minute with the new multiplier
+        expected_ore_per_minute = calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards, new_multiplier)
+        expected_ore_per_day = expected_ore_per_minute * 1440  # 1440 minutes in a day
+        
+        # Append the results to the preview_data list
+        preview_data.append([
+            f"{stake + increment:.8f} ORE", 
+            f"{new_multiplier:.8f}", 
+            f"{percentage_increase:.2f}%", 
+            f"${cost_of_additional_ore:.2f}", 
+            f"{expected_ore_per_day:.8f} ORE",
+            f"${expected_ore_per_day * ore_price:.6f}"
+        ])
+    
+    # Display the results in a table
+    headers = ["Stake (ORE)", "Multiplier", "Increase (%)", "Cost of ORE Buy (USD)", "Expected ORE/Day", "Expected USD/Day"]
+    preview_table = tabulate(preview_data, headers=headers, tablefmt="pretty")
+    print(preview_table)
 
 def main():
     sol_price = get_token_price(sol_address)
@@ -107,23 +143,33 @@ def main():
 
     print(Fore.GREEN + "Enter your priority fees in microlamports: ", end="")
     priority_fees_lamports = int(input())
-    print(Fore.GREEN + "Enter your electric/rental fees per hour in USD: ", end="")
+    print(Fore.GREEN + "Enter your electricity/rental fees per hour in USD: ", end="")
     electric_cost_per_hour = float(input())
 
     # Get real ORE rewards for each difficulty level from the `ore rewards` command
     rewards = get_ore_rewards()
 
-    # Calculate expected ORE per minute
-    expected_ore_per_minute = calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards)
+    # Get the current stake and top stake
+    stake, top_stake = multiplier.get_stake_and_top_stake()
+
+    # Calculate the multiplier based on user's stake and top staker's stake
+    multiplier_value = multiplier.calculate_multiplier(stake, top_stake)
+    print(f"Multiplier Applied: {multiplier_value:.8f}")
+
+    # Calculate expected ORE per minute with the multiplier applied
+    expected_ore_per_minute = calculate_expected_ore_per_minute(difficulty_levels, probabilities, rewards, multiplier_value)
     expected_ore_per_day = expected_ore_per_minute * 1440  # 1440 minutes in a day
 
     total_ore_mined, total_profit_usd, difficulty_hits = simulate_one_day(
         difficulty_levels, probabilities, rewards, ore_price, sol_price, 
-        priority_fees_lamports, electric_cost_per_hour)
+        priority_fees_lamports, electric_cost_per_hour, multiplier_value)
 
-    # Display the tiered summary
+    # Display the tiered summary with the multiplier applied
     print(Fore.CYAN + "\nDifficulties Solved During 1440 Passes:")
-    display_tiered_summary(difficulty_hits, rewards, 1440)
+    display_tiered_summary(difficulty_hits, rewards, 1440, multiplier_value)
+
+    # Show multiplier preview for different stake increments
+    display_multiplier_preview(stake, top_stake, difficulty_levels, probabilities, rewards, ore_price)
     
     # Detailed breakdown
     print(Fore.CYAN + "\nCost Breakdown:")
@@ -131,7 +177,7 @@ def main():
     print(f"{Fore.YELLOW}ORE Price: {Fore.RESET}${ore_price:.2f}")
     print(f"{Fore.YELLOW}Priority Fees: {Fore.RESET}{priority_fees_lamports / 1e6:.6f} SOL")
     print(f"{Fore.YELLOW}ORE Mining Fee: {Fore.RESET}0.000300 SOL")
-    print(f"{Fore.YELLOW}Electric/Rental Fees: {Fore.RESET}${electric_cost_per_hour:.2f} per hour")
+    print(f"{Fore.YELLOW}Electricity/Rental Fees: {Fore.RESET}${electric_cost_per_hour:.2f} per hour")
     
     print(Fore.CYAN + "\nSummary:")
     print(f"Total ORE Mined for the Day: {Fore.GREEN}{total_ore_mined:.8f} ORE {Fore.RESET}| {Fore.GREEN}${total_ore_mined * ore_price:.6f}")
