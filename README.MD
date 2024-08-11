@@ -87,12 +87,14 @@ Here’s a snapshot of the ORECULATOR in action:
 To install the required packages for cal.py:
 
 ```bash
-pip install -r requirements.txt```
+pip install -r requirements.txt
+```
 
 Then, run the ORECULATOR with:
 
 ```bash
-./cal.py```
+./cal.py
+```
 
 ### Change default variable config manually
 
