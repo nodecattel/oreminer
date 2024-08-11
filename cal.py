@@ -87,6 +87,31 @@ def calculate_profitability(priority_fees_lamports, average_difficulty, rewards,
     
     return total_fee_usd, reward_usd, profit_usd_per_hour, total_fee_sol_per_hour, reward_ore
 
+def suggest_adjusted_priority_fee(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price, electric_cost_per_hour):
+    ore_mining_fee_lamports = 5000
+    reward_ore = rewards.get(average_difficulty, 0)
+    reward_usd_per_hour = round(reward_ore * ore_price * 60, 8)
+    total_fee_usd_per_hour = reward_usd_per_hour
+    
+    total_fee_sol_per_hour = total_fee_usd_per_hour / sol_price
+    total_fee_lamports_per_hour = total_fee_sol_per_hour * 1e9
+    adjusted_priority_fee_lamports = total_fee_lamports_per_hour / 60 - ore_mining_fee_lamports
+    
+    if adjusted_priority_fee_lamports < 0:
+        adjusted_priority_fee_lamports = 0
+    
+    return adjusted_priority_fee_lamports
+
+def suggest_ore_price_for_breakeven(priority_fees_lamports, average_difficulty, rewards, sol_price, electric_cost_per_hour):
+    ore_mining_fee_lamports = 5000
+    total_fee_lamports = (priority_fees_lamports + ore_mining_fee_lamports) * 60
+    total_fee_sol = total_fee_lamports / 1e9
+    total_fee_usd = total_fee_sol * sol_price + electric_cost_per_hour
+    reward_ore = rewards.get(average_difficulty, 0)
+    ore_price_to_breakeven = total_fee_usd / (reward_ore * 60) if reward_ore > 0 else float('inf')
+    
+    return ore_price_to_breakeven
+
 def main():
     sol_price = get_token_price(sol_address)
     ore_price = get_token_price(ore_address)
@@ -132,6 +157,10 @@ def main():
         print(Fore.GREEN + f"Profit (USD/hour): ${profit_usd_per_hour:.6f}")
     else:
         print(Fore.RED + f"Profit (USD/hour): ${profit_usd_per_hour:.6f}")
+        suggested_priority_fee = suggest_adjusted_priority_fee(priority_fees_lamports, average_difficulty, rewards, sol_price, ore_price, electric_cost_per_hour)
+        print(Fore.RED + f"Suggested Priority Fee to be Profitable (lamports): {suggested_priority_fee:.0f}")
+        ore_price_to_breakeven = suggest_ore_price_for_breakeven(priority_fees_lamports, average_difficulty, rewards, sol_price, electric_cost_per_hour)
+        print(Fore.RED + f"ORE Price needed to Breakeven: ${ore_price_to_breakeven:.6f}")
 
 if __name__ == "__main__":
     main()
