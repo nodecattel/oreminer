@@ -79,6 +79,21 @@ Upgrade ORE-CLI version
 ./upgrade.sh
 ```
 
+### ORECULATOR Setup & Usage 🧮
+Here’s a snapshot of the ORECULATOR in action:
+
+![ORECULATOR Snapshot](https://github.com/nodecattel/oreminer/blob/4773cbad9900e0a60fa7299cda5483df7012ce66/oreculator-sample.png)
+
+To install the required packages for cal.py:
+
+```bash
+pip install -r requirements.txt```
+
+Then, run the ORECULATOR with:
+
+```bash
+./cal.py```
+
 ### Change default variable config manually
 
 To change your setting please set up in `ore.conf` located at `$HOME/.ore`
