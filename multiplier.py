@@ -1,31 +1,61 @@
 #!/usr/bin/env python3
 
 import subprocess
+import os
+
+def get_keypair_path():
+    try:
+        # Try to get the keypair path from ore.conf
+        with open(os.path.expanduser("~/.ore/ore.conf"), "r") as conf_file:
+            for line in conf_file:
+                if line.startswith("KEYPAIR_PATH="):
+                    return line.split("=")[1].strip()
+        
+        # If not found in ore.conf, get it from Solana config
+        solana_config_output = subprocess.run(
+            ['solana', 'config', 'get'],
+            capture_output=True, text=True
+        )
+        for line in solana_config_output.stdout.strip().split('\n'):
+            if "Keypair Path:" in line:
+                return line.split(":")[1].strip()
+        
+    except Exception as e:
+        print(f"Failed to retrieve keypair path: {e}")
+        return None
 
 def get_stake_and_top_stake():
     try:
-        # Get user's stake from the 'ore balance' command
-        balance_output = subprocess.run(['ore', 'balance'], capture_output=True, text=True)
-        balance_lines = balance_output.stdout.strip().split('\n')
-        
-        stake = 0
-        for line in balance_lines:
-            if "Stake:" in line:
-                stake = float(line.split(":")[1].strip().split()[0])
-                break
+        keypair_path = get_keypair_path()
+        if keypair_path:
+            # Get user's stake from the 'ore balance' command with the keypair option
+            balance_output = subprocess.run(
+                ['ore', 'balance', '--keypair', keypair_path], 
+                capture_output=True, text=True
+            )
+            balance_lines = balance_output.stdout.strip().split('\n')
 
-        # Get top staker's stake from the 'ore config' command
-        config_output = subprocess.run(['ore', 'config'], capture_output=True, text=True)
-        config_lines = config_output.stdout.strip().split('\n')
-        
-        top_stake = 0
-        for line in config_lines:
-            if "Top stake:" in line:
-                top_stake = float(line.split(":")[1].strip().split()[0])
-                break
+            stake = 0
+            for line in balance_lines:
+                if "Stake:" in line:
+                    stake = float(line.split(":")[1].strip().split()[0])
+                    break
 
-        return stake, top_stake
-    
+            # Get top staker's stake from the 'ore config' command
+            config_output = subprocess.run(['ore', 'config'], capture_output=True, text=True)
+            config_lines = config_output.stdout.strip().split('\n')
+
+            top_stake = 0
+            for line in config_lines:
+                if "Top stake:" in line:
+                    top_stake = float(line.split(":")[1].strip().split()[0])
+                    break
+
+            return stake, top_stake
+        else:
+            print("Error: Keypair path not found in ore.conf or Solana config.")
+            return None, None
+
     except Exception as e:
         print(f"Failed to retrieve stake information: {e}")
         return None, None
