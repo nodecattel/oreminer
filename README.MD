@@ -10,7 +10,9 @@ $ORE (V2) token address `oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp`
 
 $ORE (V1) token address `oreoN2tQbHXVaZsr3pf66A48miqcBXCDJozganhEJgz` - mining paused, migrate to v2 if you have
 
-![ORE Miner Interface Sample](https://github.com/nodecattel/oreminer/blob/be50d8bd10929a299eede21ef7f106e9eeeade4f/oreminer-interface-sample.png)
+## Oreminer script cli interface sample 
+
+![ORE Miner Interface Sample](https://github.com/nodecattel/oreminer/blob/51a8793be37bc72f683ffd24bf8ec9e8ba79f510/oreminer-interface-sample.png)
 
 ## Quick Start 🛠️
 
