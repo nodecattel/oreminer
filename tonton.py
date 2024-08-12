@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import json
 import subprocess
 from dune_client.client import DuneClient
 from datetime import datetime, timedelta
@@ -10,15 +9,15 @@ from colorama import Fore, Style, init
 # Initialize colorama
 init(autoreset=True)
 
-# Setup for API key
-API_KEY = "<dune-api-key>"
+# Setup for DUNE-API key
+API_KEY = "<DUNE-API-KEY>"
 
 # Function to get the default Solana address
 def get_solana_address():
     try:
         result = subprocess.run(["solana", "address"], capture_output=True, text=True, check=True)
         return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         print(Fore.RED + "Error fetching Solana address")
         sys.exit(1)
 
@@ -48,6 +47,19 @@ miner_data = filtered_result[0] if filtered_result else None
 if miner_data is None:
     print(Fore.RED + "No data found for the given Solana address.")
     sys.exit(1)
+
+# Rename the keys to use "pass" terminology
+miner_data = {
+    'avg_difficulty_per_pass': miner_data.get('avg_difficulty_per_event', 0),
+    'avg_reward_per_pass': miner_data.get('avg_reward_per_event', 0),
+    'avg_timing_per_pass': miner_data.get('avg_timing_per_event', 0),
+    'max_difficulty': miner_data.get('max_difficulty', 0),
+    'max_reward': miner_data.get('max_reward', 0),
+    'percent_liveness_penalty': miner_data.get('percent_liveness_penalty', 0),
+    'signer': miner_data.get('signer', ''),
+    'total_mining_passes': miner_data.get('total_mining_events', 0),
+    'total_rewards': miner_data.get('total_rewards', 0),
+}
 
 # Print the header and filtered result for the specific address
 print(Fore.CYAN + "Miner Daily Stats:")
@@ -83,47 +95,54 @@ print("")
 
 # Compare miner's difficulty with global averages
 if miner_data:
-    comparison_24h = miner_data['avg_difficulty_per_event'] / last_24_hours_avg if last_24_hours_avg else 0
-    comparison_week = miner_data['avg_difficulty_per_event'] / last_week_avg if last_week_avg else 0
+    comparison_24h = miner_data['avg_difficulty_per_pass'] / last_24_hours_avg if last_24_hours_avg else 0
+    comparison_week = miner_data['avg_difficulty_per_pass'] / last_week_avg if last_week_avg else 0
     percentage_difference_24h = (comparison_24h - 1) * 100
     percentage_difference_week = (comparison_week - 1) * 100
 
     print(Fore.CYAN + "Miner vs. Global Comparison:")
-    print(Fore.CYAN + f"Miner's Difficulty vs. 24-Hour Global Average: " + Fore.RESET + f"{percentage_difference_24h:.2f}% ({miner_data['avg_difficulty_per_event']:.4f} vs {last_24_hours_avg:.4f})")
-    print(Fore.CYAN + f"Miner's Difficulty vs. Weekly Global Average: " + Fore.RESET + f"{percentage_difference_week:.2f}% ({miner_data['avg_difficulty_per_event']:.4f} vs {last_week_avg:.4f})")
+    print(Fore.CYAN + f"Miner's Difficulty vs. 24-Hour Global Average: " + Fore.RESET + f"{percentage_difference_24h:.2f}% ({miner_data['avg_difficulty_per_pass']:.4f} vs {last_24_hours_avg:.4f})")
+    print(Fore.CYAN + f"Miner's Difficulty vs. Weekly Global Average: " + Fore.RESET + f"{percentage_difference_week:.2f}% ({miner_data['avg_difficulty_per_pass']:.4f} vs {last_week_avg:.4f})")
     print("")
 
 # Fetch percentile ranking of the miner
-sorted_miners = sorted(data, key=lambda x: x['avg_difficulty_per_event'], reverse=True)
+sorted_miners = sorted(data, key=lambda x: x.get('avg_difficulty_per_event', 0), reverse=True)
 total_miners = len(sorted_miners)
 miner_rank = next((index for index, entry in enumerate(sorted_miners) if entry['signer'] == address), None)
 percentile = (miner_rank / total_miners) * 100 if miner_rank is not None else None
+
+# Calculate potential earnings increase based on timing reduction
+def calculate_potential_earnings_increase(old_timing, reduction_factor=0.9):
+    new_timing = old_timing * reduction_factor
+    return ((old_timing / new_timing) - 1) * 100
+
+potential_earnings_increase = calculate_potential_earnings_increase(miner_data['avg_timing_per_pass'])
 
 # Performance Summary
 performance_summary = f"""
 Performance Summary:
 --------------------
-Miner's current average difficulty: {miner_data['avg_difficulty_per_event']:.4f}
-- This places you in the {percentile:.2f}th percentile, meaning you're performing better than {100 - percentile:.2f}% of miners.
+Miner's current average difficulty: {Fore.GREEN}{miner_data['avg_difficulty_per_pass']:.4f}{Fore.RESET}
+- This places you in the {Fore.GREEN}{percentile:.2f}th{Fore.RESET} percentile, meaning you're performing better than {Fore.GREEN}{100 - percentile:.2f}%{Fore.RESET} of miners.
 
 Comparison to Peers:
 --------------------
-- Your average difficulty is {percentage_difference_24h:.2f}% above the 24-hour global average ({miner_data['avg_difficulty_per_event']:.4f} vs {last_24_hours_avg:.4f}).
-- Compared to the top 25% of miners, you're trailing behind with a difficulty gap of {(1 - miner_data['avg_difficulty_per_event'] / sorted_miners[int(0.25 * total_miners)]['avg_difficulty_per_event']) * 100:.1f}% ({miner_data['avg_difficulty_per_event']:.4f} vs {sorted_miners[int(0.25 * total_miners)]['avg_difficulty_per_event']:.4f}).
+- Your average difficulty is {Fore.GREEN}{percentage_difference_24h:.2f}%{Fore.RESET} above the 24-hour global average ({miner_data['avg_difficulty_per_pass']:.4f} vs {last_24_hours_avg:.4f}).
+- Compared to the top 25% of miners, you're trailing behind with a difficulty gap of {Fore.GREEN}{(1 - miner_data['avg_difficulty_per_pass'] / sorted_miners[int(0.25 * total_miners)].get('avg_difficulty_per_event', 0)) * 100:.1f}%{Fore.RESET} ({miner_data['avg_difficulty_per_pass']:.4f} vs {sorted_miners[int(0.25 * total_miners)].get('avg_difficulty_per_event', 0):.4f}).
 
 Optimization Suggestions:
 -------------------------
-- Your average timing per event is {miner_data['avg_timing_per_event']:.2f} seconds. To improve, consider optimizing your hardware to reduce this figure.
-- Potential earnings increase by 5-10% with reduced timing and optimized reward strategies.
+- Your average confirmation timing per pass is {Fore.GREEN}{miner_data['avg_timing_per_pass']:.2f} seconds{Fore.RESET}. To improve, consider optimizing your {Fore.GREEN}--priority-fee{Fore.RESET} and/or {Fore.GREEN}--jito{Fore.RESET} tip activation to reduce this figure.
+- Potential earnings could increase by approximately {Fore.GREEN}{potential_earnings_increase:.2f}%{Fore.RESET} if you reduce the timing per pass by 10%.
 
 Historical Trends:
 ------------------
-- Your current difficulty is consistent with your historical average of {miner_data['avg_difficulty_per_event']:.2f}.
-- In the past week, your best performance was a max difficulty of {miner_data['max_difficulty']}, matching your current peak.
+- Your current difficulty is consistent with your historical average of {Fore.GREEN}{miner_data['avg_difficulty_per_pass']:.2f}{Fore.RESET}.
+- In the past week, your best performance was a max difficulty of {Fore.GREEN}{miner_data['max_difficulty']}{Fore.RESET}, matching your current peak.
 
 Profitability Insights:
 ------------------------
-- You’ve earned a total of {miner_data['total_rewards']:.4f} ORE from {miner_data['total_mining_events']} events.
+- You’ve earned a total of {Fore.GREEN}{miner_data['total_rewards']:.4f} ORE{Fore.RESET} from {Fore.GREEN}{miner_data['total_mining_passes']} passes{Fore.RESET} within the last 24 hours.
 - Consider boosting your setup to align with the top percentile for higher rewards.
 """
 
