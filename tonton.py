@@ -11,7 +11,7 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # Setup for API key
-API_KEY = "7zut0p9NHSFUB4tFC5KKLA9hdUuA7HQ6"
+API_KEY = "<dune-api-key>"
 
 # Function to get the default Solana address
 def get_solana_address():
