@@ -67,6 +67,7 @@ show_help() {
     $ECHO "  close      Close your onchain accounts to recover rent"
     $ECHO "  config     Fetch the program config"
     $ECHO "  mine       Start mining Ore"
+    $ECHO "  pool       Join NodeCattel OREHQ pool"
     $ECHO "  rewards    Fetch the reward rate for each difficulty level"
     $ECHO "  stake      Stake ore to earn a multiplier on your mining rewards use --amount <ORE AMOUNT> to partial stake"
     $ECHO "  upgrade    Upgrade your ORE tokens from v1 to v2"
@@ -188,6 +189,11 @@ run_mining() {
             break
         fi
     done
+}
+
+# Function to run the pool setup
+join_pool() {
+    ./pool.sh
 }
 
 # Handle commands
@@ -331,6 +337,9 @@ case "$COMMAND" in
 
         # Run the mining operation
         run_mining
+        ;;
+    pool)
+        join_pool
         ;;
     *)
         show_help

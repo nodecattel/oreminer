@@ -10,7 +10,7 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # Setup for DUNE-API key
-API_KEY = "<DUNE-API-KEY>"
+API_KEY = "lxawBvgypC7qFoqBRIk9PFF3uSkEsa86"
 
 # Function to get the default Solana address
 def get_solana_address():
