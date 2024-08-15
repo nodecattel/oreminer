@@ -25,7 +25,7 @@ echo -e "\033[0m"
 
 # Ensure the necessary packages are installed
 echo -e "\033[0;32m\nChecking for required packages...\033[0m"
-sudo apt-get install -y openssl pkg-config libssl-dev
+sudo apt-get install -y openssl pkg-config libssl-dev bc
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mError installing required packages. Exiting...\033[0m"
     exit 1
