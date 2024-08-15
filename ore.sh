@@ -67,7 +67,7 @@ show_help() {
     $ECHO "  close      Close your onchain accounts to recover rent"
     $ECHO "  config     Fetch the program config"
     $ECHO "  mine       Start mining Ore"
-    $ECHO "  pool       Join NodeCattel OREHQ pool"
+    $ECHO "  pool       Join Alvarium Mining Pool"
     $ECHO "  rewards    Fetch the reward rate for each difficulty level"
     $ECHO "  stake      Stake ore to earn a multiplier on your mining rewards use --amount <ORE AMOUNT> to partial stake"
     $ECHO "  upgrade    Upgrade your ORE tokens from v1 to v2"
