@@ -63,11 +63,15 @@ solana address
 ```
 
 After installation, fund your wallet and you can start the mining process by running:
-
+### Solo mining with your machine
 ```bash
 ./ore.sh mine
 ```
 
+### Pool mining with Alvarium mine pool
+```bash
+./ore.sh mine
+```
 See all available commands
 
 ```
@@ -126,7 +130,13 @@ https://github.com/regolith-labs/ore-cli
 Dune $ORE PoW Mining on Soylana Manlet
 
 ```
-https://dune.com/rawrmaan/ore-mining-solana
+https://dune.com/thetonton/ore-mine-event-analysis
+```
+
+Alverium mine pool dashboard
+
+```
+https://alvarium.vercel.app
 ```
 
 `$ORE` Price chart
