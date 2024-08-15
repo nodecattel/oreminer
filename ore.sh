@@ -57,7 +57,8 @@ show_help() {
     $ECHO ""
     $ECHO "Usage: ./ore.sh <COMMAND>"
     $ECHO ""
-    $ECHO -e "To run: \033[0;32m ./ore.sh mine\033[0m"
+    $ECHO -e "To solo mining run: \033[0;32m ./ore.sh mine\033[0m"
+    $ECHO -e "To pool mining with Alvarium run: \033[0;32m ./ore.sh pool\033[0m"
     $ECHO ""
     $ECHO "Commands:"
     $ECHO "  balance    Fetch the Ore balance of an account"
@@ -72,6 +73,7 @@ show_help() {
     $ECHO "  stake      Stake ore to earn a multiplier on your mining rewards use --amount <ORE AMOUNT> to partial stake"
     $ECHO "  upgrade    Upgrade your ORE tokens from v1 to v2"
 }
+
 
 # Function to fetch the balance of an account
 fetch_balance() {
