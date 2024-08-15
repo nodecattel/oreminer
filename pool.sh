@@ -30,25 +30,29 @@ echo -e "\033[0m"
 echo -e "\033[0;32m\nChecking for required packages...\033[0m"
 sudo apt-get install -y openssl pkg-config libssl-dev
 
-# Clone or update ore-pool-miner repository
+# Check and remove existing ore-hq-client directory if exists
+if [ -d "ore-hq-client" ]; then
+    echo -e "\033[0;32m\nDirectory 'ore-hq-client' exists. Removing directory...\033[0m"
+    rm -rf ore-hq-client
+fi
+
+# Install ore-pool-miner (alvarium-cli)
+echo -e "\033[0;32m\nInstalling ore-pool-miner...\033[0m"
 if [ -d "ore-pool-miner" ]; then
     echo -e "\033[0;32m\nDirectory 'ore-pool-miner' exists. Checking for updates...\033[0m"
     cd ore-pool-miner
     git pull
 else
-    echo -e "\033[0;32m\nCloning ore-pool-miner repository...\033[0m"
     git clone https://github.com/Bifrost-Technologies/ore-pool-miner.git
     cd ore-pool-miner
 fi
 
-# Build the ore-pool-miner (alvarium-cli)
-echo -e "\033[0;32m\nBuilding ore-pool-miner...\033[0m"
+# Build the ore-pool-miner project
 cargo build --release
 
 # Copy the binary to Cargo bin directory
 echo -e "\033[0;32m\nCopying the binary to Cargo bin directory...\033[0m"
 cp target/release/alvarium ~/.cargo/bin/
-cd ..
 
 # Load values from ore.conf
 config_file="$HOME/.ore/ore.conf"
@@ -78,10 +82,12 @@ if [[ -n "$input_cores" ]]; then
     CORES="$input_cores"
 fi
 
-# Set the buffer time to 8 seconds with a note that it's recommended by Alvarium Pool Mine
-BUFFER_TIME=8
-echo -e "\033[0m\nBuffer Time (default: 8):\033[0;32m"
-echo -e "Buffer time set to 8 seconds, as recommended by Alvarium Pool Mine.\033[0m"
+BUFFER_TIME=8  # Alvarium Pool Mine recommended value
+echo -e "\033[0m\nBuffer Time (default: $BUFFER_TIME):\033[0;32m"
+read -p "Enter buffer time or press Enter to keep the default: " input_buffer
+if [[ -n "$input_buffer" ]]; then
+    BUFFER_TIME="$input_buffer"
+fi
 
 echo -e "\033[0;35m"
 cat << "EOF"
@@ -92,6 +98,6 @@ EOF
 echo -e "\033[0m"
 
 # Final command execution
-echo -e "\033[0;32m\nFinal command to run:\033[0m alvarium \"$RPC_URL\" \"$WALLET_ADDRESS\" \"$CORES\" \"$BUFFER_TIME\""
+echo -e "\033[0;32m\nFinal command to run:\033[0m alvarium $RPC_URL $WALLET_ADDRESS $CORES $BUFFER_TIME"
 echo -e "\033[0;31m\nAlvarium client initiated. You can stop the process anytime by pressing CTRL + C.\033[0m"
-alvarium "$RPC_URL" "$WALLET_ADDRESS" "$CORES" "$BUFFER_TIME"
+alvarium $RPC_URL $WALLET_ADDRESS $CORES $BUFFER_TIME
