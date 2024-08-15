@@ -6,11 +6,25 @@ cat << "EOF"
 █▀█ █▀█ █▀▀ █▀▄▀█ █ █▄░█ █▀▀ █▀█
 █▄█ █▀▄ ██▄ █░▀░█ █ █░▀█ ██▄ █▀▄ ORE V2 - 2.3.0 mainnet
 EOF
-echo -e "Version 0.1.4 - NodeCattel Alvarium Pool Client"
+echo -e "Version 0.1.3 - NodeCattel Alvarium Pool Client"
 echo -e "Made by NodeCattel & All the credits to HardhatChad\033[0m"
 
 # Exit script if any command fails
 set -e
+
+# Display explanation of how the pool works
+echo -e "\033[1;35m"
+length=80  # Adjusted length for the full line to match the explanation width
+printf '=%.0s' $(seq 1 $length)
+echo -e "\033[0m"
+echo -e "\033[0m"
+echo -e "Joining a pool means computing the best hash per minute and submitting it"
+echo -e "to the mining pool server. The server then submits combined hash received"
+echo -e "from all miners to the chain in a single transaction. 5% will be the pool fee"
+echo -e "and your reward will be given directly to you."
+echo -e "\033[1;35m"
+printf '=%.0s' $(seq 1 $length)
+echo -e "\033[0m"
 
 # Ensure the necessary packages are installed
 echo -e "\033[0;32m\nChecking for required packages...\033[0m"
@@ -36,25 +50,10 @@ echo -e "\033[0;32m\nCopying the binary to Cargo bin directory...\033[0m"
 cp target/release/alvarium ~/.cargo/bin/
 cd ..
 
-# Display explanation of how the pool works
-echo -e "\033[1;35m"
-length=80  # Adjusted length for the full line to match the explanation width
-printf '=%.0s' $(seq 1 $length)
-echo -e "\033[0m"
-echo -e "\033[0m"
-echo -e "Joining a pool means computing the best hash per minute and submitting it"
-echo -e "to the mining pool server. The server then submits combined hash received"
-echo -e "from all miners to the chain in a single transaction. 5% will be the pool fee"
-echo -e "and your reward will be given directly to you."
-echo -e "\033[1;35m"
-printf '=%.0s' $(seq 1 $length)
-echo -e "\033[0m"
-
 # Load values from ore.conf
 config_file="$HOME/.ore/ore.conf"
 RPC_URL=$(grep 'RPC' "$config_file" | cut -d'=' -f2 | xargs)
 CORES=$(grep 'CORES' "$config_file" | cut -d'=' -f2 | xargs)
-BUFFER_TIME=$(grep 'BUFFER_TIME' "$config_file" | cut -d'=' -f2 | xargs)
 KEYPAIR_PATH=$(grep 'KEYPAIR_PATH' "$config_file" | cut -d'=' -f2 | xargs)
 
 # Fetch the default wallet address using the solana address command
@@ -79,11 +78,10 @@ if [[ -n "$input_cores" ]]; then
     CORES="$input_cores"
 fi
 
-echo -e "\033[0m\nBuffer Time (default: $BUFFER_TIME):\033[0;32m"
-read -p "Enter buffer time or press Enter to keep the default: " input_buffer
-if [[ -n "$input_buffer" ]]; then
-    BUFFER_TIME="$input_buffer"
-fi
+# Set the buffer time to 8 seconds with a note that it's recommended by Alvarium Pool Mine
+BUFFER_TIME=8
+echo -e "\033[0m\nBuffer Time (default: 8):\033[0;32m"
+echo -e "Buffer time set to 8 seconds, as recommended by Alvarium Pool Mine.\033[0m"
 
 echo -e "\033[0;35m"
 cat << "EOF"
