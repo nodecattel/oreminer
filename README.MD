@@ -70,7 +70,7 @@ After installation, fund your wallet and you can start the mining process by run
 
 ### Pool mining with Alvarium mine pool
 ```bash
-./ore.sh mine
+./ore.sh pool
 ```
 See all available commands
 
